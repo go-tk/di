@@ -22,15 +22,27 @@ func (p *Program) AddFunction(function Function) error {
 	return nil
 }
 
+func (p *Program) MustAddFunction(function Function) {
+	if err := p.AddFunction(function); err != nil {
+		panic(err)
+	}
+}
+
 func (p *Program) Run(ctx context.Context) error {
 	if err := p.resolve(); err != nil {
 		return err
 	}
 	if n, err := p.callFunctions(ctx); err != nil {
-		p.clean(n)
+		p.doClean(n)
 		return err
 	}
 	return nil
+}
+
+func (p *Program) MustRun(ctx context.Context) {
+	if err := p.Run(ctx); err != nil {
+		panic(err)
+	}
 }
 
 func (p *Program) resolve() error {
@@ -99,10 +111,10 @@ func (p *Program) callFunctions(ctx context.Context) (int, error) {
 }
 
 func (p *Program) Clean() {
-	p.clean(len(p.orderedFunctionDescIndexes))
+	p.doClean(len(p.orderedFunctionDescIndexes))
 }
 
-func (p *Program) clean(n int) {
+func (p *Program) doClean(n int) {
 	for i := n - 1; i >= 0; i-- {
 		functionDescIndex := p.orderedFunctionDescIndexes[i]
 		functionDesc := &p.functionDescs[functionDescIndex]

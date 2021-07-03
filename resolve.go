@@ -65,7 +65,7 @@ func (r *resolution12) processArgumentDesc(argumentDesc *argumentDesc, functionD
 	if !ok {
 		if !argumentDesc.IsOptional {
 			return fmt.Errorf("%w; tag=%q valueID=%q",
-				ErrValueNotFound, functionDesc.Tag, resultDesc.ValueID)
+				ErrValueNotFound, functionDesc.Tag, argumentDesc.ValueID)
 		}
 		return nil
 	}
@@ -85,7 +85,7 @@ func (r *resolution12) processHookDesc(hookDesc *hookDesc, functionDesc *functio
 	resultDesc, ok := r.ResultDescs[hookDesc.ValueID]
 	if !ok {
 		return fmt.Errorf("%w; tag=%q valueID=%q",
-			ErrValueNotFound, functionDesc.Tag, resultDesc.ValueID)
+			ErrValueNotFound, functionDesc.Tag, hookDesc.ValueID)
 	}
 	valueType1 := hookDesc.Value.Type()
 	valueType2 := resultDesc.Value.Type()
@@ -126,25 +126,22 @@ func (r *resolution3) processFunctionDesc(functionDescIndex int) error {
 	if err := r.stackTrace.PushEntry(functionDesc); err != nil {
 		return err
 	}
-	for i := range r.FunctionDescs {
-		functionDesc := &r.FunctionDescs[i]
-		for j := range functionDesc.Arguments {
-			argument := &functionDesc.Arguments[j]
-			if argument.Result == nil {
-				continue
-			}
-			r.stackTrace.ReferValue("argument", argument.ValueID)
-			if err := r.processFunctionDesc(argument.Result.FunctionIndex); err != nil {
-				return err
-			}
+	for i := range functionDesc.Arguments {
+		argument := &functionDesc.Arguments[i]
+		if argument.Result == nil {
+			continue
 		}
-		for j := range functionDesc.Results {
-			resultDesc := &functionDesc.Results[j]
-			for _, hookDesc := range resultDesc.Hooks {
-				r.stackTrace.ReferValue("hook", hookDesc.ValueID)
-				if err := r.processFunctionDesc(hookDesc.FunctionIndex); err != nil {
-					return err
-				}
+		r.stackTrace.ReferValue("argument", argument.ValueID)
+		if err := r.processFunctionDesc(argument.Result.FunctionIndex); err != nil {
+			return err
+		}
+	}
+	for i := range functionDesc.Results {
+		resultDesc := &functionDesc.Results[i]
+		for _, hookDesc := range resultDesc.Hooks {
+			r.stackTrace.ReferValue("hook", hookDesc.ValueID)
+			if err := r.processFunctionDesc(hookDesc.FunctionIndex); err != nil {
+				return err
 			}
 		}
 	}
