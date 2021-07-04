@@ -74,7 +74,7 @@ func (r *resolution12) processArgumentDesc(argumentDesc *argumentDesc, functionD
 	if valueType1 != valueType2 {
 		tag := r.FunctionDescs[resultDesc.FunctionIndex].Tag
 		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q valueType1=%v valueType2=%v",
-			ErrValueTypeUnmatched, functionDesc.Tag, tag, argumentDesc.ValueID,
+			ErrValueTypeMismatch, functionDesc.Tag, tag, argumentDesc.ValueID,
 			valueType1, valueType2)
 	}
 	argumentDesc.Result = resultDesc
@@ -92,7 +92,7 @@ func (r *resolution12) processHookDesc(hookDesc *hookDesc, functionDesc *functio
 	if valueType1 != valueType2 {
 		tag := r.FunctionDescs[resultDesc.FunctionIndex].Tag
 		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q valueType1=%v valueType2=%v",
-			ErrValueTypeUnmatched, functionDesc.Tag, tag, hookDesc.ValueID,
+			ErrValueTypeMismatch, functionDesc.Tag, tag, hookDesc.ValueID,
 			valueType1, valueType2)
 	}
 	hookDesc.FunctionIndex = functionDesc.Index
@@ -127,12 +127,12 @@ func (r *resolution3) processFunctionDesc(functionDescIndex int) error {
 		return err
 	}
 	for i := range functionDesc.Arguments {
-		argument := &functionDesc.Arguments[i]
-		if argument.Result == nil {
+		argumentDesc := &functionDesc.Arguments[i]
+		if argumentDesc.Result == nil {
 			continue
 		}
-		r.stackTrace.ReferValue("argument", argument.ValueID)
-		if err := r.processFunctionDesc(argument.Result.FunctionIndex); err != nil {
+		r.stackTrace.ReferValue("argument", argumentDesc.ValueID)
+		if err := r.processFunctionDesc(argumentDesc.Result.FunctionIndex); err != nil {
 			return err
 		}
 	}
@@ -162,7 +162,7 @@ func (st *stackTrace) PushEntry(functionDesc *functionDesc) error {
 	})
 	functionDescIndexes := st.functionDescIndexes
 	if _, ok := functionDescIndexes[functionDesc.Index]; ok {
-		return fmt.Errorf("%w: %s", ErrCircularDependencies, st.dump())
+		return fmt.Errorf("%w; %s", ErrCircularDependencies, st.dump())
 	}
 	if functionDescIndexes == nil {
 		functionDescIndexes = make(map[int]struct{})
@@ -206,6 +206,6 @@ type stackTraceEntry struct {
 var (
 	ErrValueAlreadyExists   = errors.New("di: value already exists")
 	ErrValueNotFound        = errors.New("di: value not found")
-	ErrValueTypeUnmatched   = errors.New("di: value type unmatched")
+	ErrValueTypeMismatch    = errors.New("di: value type mismatch")
 	ErrCircularDependencies = errors.New("di: circular dependencies")
 )

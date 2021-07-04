@@ -126,7 +126,7 @@ func (p *Program) doClean(n int) {
 		functionDesc := &p.functionDescs[functionDescIndex]
 		for j := range functionDesc.Results {
 			resultDesc := &functionDesc.Results[j]
-			if resultDesc.CleanupPtr != nil {
+			if resultDesc.CleanupPtr != nil && *resultDesc.CleanupPtr != nil {
 				(*resultDesc.CleanupPtr)()
 			}
 		}
