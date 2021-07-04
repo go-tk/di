@@ -7,11 +7,13 @@ import (
 	"reflect"
 )
 
+// Program represents a program consists of Functions.
 type Program struct {
 	functionDescs              []functionDesc
 	orderedFunctionDescIndexes []int
 }
 
+// AddFunction adds a Function into the Program.
 func (p *Program) AddFunction(function Function) error {
 	functionDesc, err := describeFunction(&function)
 	if err != nil {
@@ -22,12 +24,14 @@ func (p *Program) AddFunction(function Function) error {
 	return nil
 }
 
+// MustAddFunction wraps AddFunction and panics when an error occurs.
 func (p *Program) MustAddFunction(function Function) {
 	if err := p.AddFunction(function); err != nil {
 		panic(err)
 	}
 }
 
+// Run arranges Functions basing on dependency analysis and calls them in order.
 func (p *Program) Run(ctx context.Context) error {
 	if err := p.resolve(); err != nil {
 		return err
@@ -39,6 +43,7 @@ func (p *Program) Run(ctx context.Context) error {
 	return nil
 }
 
+// MustRun wraps Run and panics when an error occurs.
 func (p *Program) MustRun(ctx context.Context) {
 	if err := p.Run(ctx); err != nil {
 		panic(err)
@@ -78,7 +83,7 @@ func (p *Program) callFunctions(ctx context.Context) (int, error) {
 			argumentDesc.Value.Set(argumentDesc.Result.Value)
 		}
 		if err := functionDesc.Body(ctx); err != nil {
-			return i, fmt.Errorf("function failed; tag=%q: %w", functionDesc.Tag, err)
+			return i, fmt.Errorf("di: function failed; tag=%q: %w", functionDesc.Tag, err)
 		}
 		i++
 		for j := range functionDesc.Results {
@@ -101,7 +106,7 @@ func (p *Program) callFunctions(ctx context.Context) (int, error) {
 				hookDesc.Value.Set(resultDesc.Value)
 				if err := (*hookDesc.CallbackPtr)(ctx); err != nil {
 					tag := p.functionDescs[hookDesc.FunctionIndex].Tag
-					return i, fmt.Errorf("callback failed; tag=%q valueID=%q: %w",
+					return i, fmt.Errorf("di: callback failed; tag=%q valueID=%q: %w",
 						tag, resultDesc.ValueID, err)
 				}
 			}
@@ -110,6 +115,7 @@ func (p *Program) callFunctions(ctx context.Context) (int, error) {
 	return i, nil
 }
 
+// Clean does cleanups associated with Results.
 func (p *Program) Clean() {
 	p.doClean(len(p.orderedFunctionDescIndexes))
 }
