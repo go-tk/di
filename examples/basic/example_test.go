@@ -82,7 +82,7 @@ func Qux() di.Function {
 	var y int
 	var z int
 	return di.Function{
-		Tag: "baz",
+		Tag: "qux",
 		Arguments: []di.Argument{
 			{InValueID: "x", InValuePtr: &x},
 			{InValueID: "y", InValuePtr: &y},
