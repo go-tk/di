@@ -58,20 +58,20 @@ func describeArguments(arguments []Argument, tag string) ([]argumentDesc, error)
 
 func validateArgument(argument *Argument, tag string) error {
 	if argument.InValueID == "" {
-		return fmt.Errorf("%w: empty in-value id; tag=%q", ErrInvalidArgument, tag)
+		return fmt.Errorf("%w: empty in-value id; tag=%q", errInvalidArgument, tag)
 	}
 	if argument.InValuePtr == nil {
 		return fmt.Errorf("%w: no in-value pointer; tag=%q inValueID=%q",
-			ErrInvalidArgument, tag, argument.InValueID)
+			errInvalidArgument, tag, argument.InValueID)
 	}
 	inValuePtr := reflect.ValueOf(argument.InValuePtr)
 	if inValuePtr.Kind() != reflect.Ptr {
 		return fmt.Errorf("%w: invalid in-value pointer type; tag=%q inValueID=%q inValuePtrType=%T",
-			ErrInvalidArgument, tag, argument.InValueID, argument.InValuePtr)
+			errInvalidArgument, tag, argument.InValueID, argument.InValuePtr)
 	}
 	if inValuePtr.IsNil() {
 		return fmt.Errorf("%w: nil in-value pointer; tag=%q inValueID=%q",
-			ErrInvalidArgument, tag, argument.InValueID)
+			errInvalidArgument, tag, argument.InValueID)
 	}
 	return nil
 }
@@ -93,20 +93,20 @@ func describeResults(results []Result, tag string) ([]resultDesc, error) {
 
 func validateResult(result *Result, tag string) error {
 	if result.OutValueID == "" {
-		return fmt.Errorf("%w: empty out-value id; tag=%q", ErrInvalidResult, tag)
+		return fmt.Errorf("%w: empty out-value id; tag=%q", errInvalidResult, tag)
 	}
 	if result.OutValuePtr == nil {
 		return fmt.Errorf("%w: no out-value pointer; tag=%q outValueID=%q",
-			ErrInvalidResult, tag, result.OutValueID)
+			errInvalidResult, tag, result.OutValueID)
 	}
 	outValuePtr := reflect.ValueOf(result.OutValuePtr)
 	if outValuePtr.Kind() != reflect.Ptr {
 		return fmt.Errorf("%w: invalid out-value pointer type; tag=%q outValueID=%q outValuePtrType=%T",
-			ErrInvalidResult, tag, result.OutValueID, result.OutValuePtr)
+			errInvalidResult, tag, result.OutValueID, result.OutValuePtr)
 	}
 	if outValuePtr.IsNil() {
 		return fmt.Errorf("%w: nil out-value pointer; tag=%q outValueID=%q",
-			ErrInvalidResult, tag, result.OutValueID)
+			errInvalidResult, tag, result.OutValueID)
 	}
 	return nil
 }
@@ -128,31 +128,33 @@ func describeHooks(hooks []Hook, tag string) ([]hookDesc, error) {
 
 func validateHook(hook *Hook, tag string) error {
 	if hook.InValueID == "" {
-		return fmt.Errorf("%w: empty in-value id; tag=%q", ErrInvalidHook, tag)
+		return fmt.Errorf("%w: empty in-value id; tag=%q", errInvalidHook, tag)
 	}
 	if hook.InValuePtr == nil {
 		return fmt.Errorf("%w: no in-value pointer; tag=%q inValueID=%q",
-			ErrInvalidHook, tag, hook.InValueID)
+			errInvalidHook, tag, hook.InValueID)
 	}
 	inValuePtr := reflect.ValueOf(hook.InValuePtr)
 	if inValuePtr.Kind() != reflect.Ptr {
 		return fmt.Errorf("%w: invalid in-value pointer type; tag=%q inValueID=%q inValuePtrType=%T",
-			ErrInvalidHook, tag, hook.InValueID, hook.InValuePtr)
+			errInvalidHook, tag, hook.InValueID, hook.InValuePtr)
 	}
 	if inValuePtr.IsNil() {
 		return fmt.Errorf("%w: nil in-value pointer; tag=%q inValueID=%q",
-			ErrInvalidHook, tag, hook.InValueID)
+			errInvalidHook, tag, hook.InValueID)
 	}
 	if hook.CallbackPtr == nil {
 		return fmt.Errorf("%w: nil callback pointer; tag=%q inValueID=%q",
-			ErrInvalidHook, tag, hook.InValueID)
+			errInvalidHook, tag, hook.InValueID)
 	}
 	return nil
 }
 
 var (
+	// ErrInvalidFunction is returned by Program.AddFunction() when the Function is invalid.
 	ErrInvalidFunction = errors.New("di: invalid function")
-	ErrInvalidArgument = errors.New("di: invalid augment")
-	ErrInvalidResult   = errors.New("di: invalid result")
-	ErrInvalidHook     = errors.New("di: invalid hook")
+
+	errInvalidArgument = fmt.Errorf("%w: invalid augment", ErrInvalidFunction)
+	errInvalidResult   = fmt.Errorf("%w: invalid result", ErrInvalidFunction)
+	errInvalidHook     = fmt.Errorf("%w: invalid hook", ErrInvalidFunction)
 )

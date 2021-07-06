@@ -18,7 +18,7 @@ type Argument struct {
 	IsOptional bool
 }
 
-// Argument describes a value the container provides.
+// Result describes a value the container provides.
 // It is optional to do a cleanup for the value when Program.Clean() is executed.
 type Result struct {
 	OutValueID  string

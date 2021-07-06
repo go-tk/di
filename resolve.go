@@ -204,8 +204,19 @@ type stackTraceEntry struct {
 }
 
 var (
-	ErrValueAlreadyExists   = errors.New("di: value already exists")
-	ErrValueNotFound        = errors.New("di: value not found")
-	ErrValueTypeMismatch    = errors.New("di: value type mismatch")
+	// ErrValueAlreadyExists is returned by Program.Run() when identical out-value ids are
+	// used by Results.
+	ErrValueAlreadyExists = errors.New("di: value already exists")
+
+	// ErrValueNotFound is returned by Program.Run() when no corresponding out-value is
+	// found by the value id of an in-value.
+	ErrValueNotFound = errors.New("di: value not found")
+
+	// ErrValueTypeMismatch is returned by Program.Run() when the type of an in-value is not
+	// matched with the type of it's corresponding out-value.
+	ErrValueTypeMismatch = errors.New("di: value type mismatch")
+
+	// ErrCircularDependencies is returned by Program.Run() when circular dependencies are
+	// detected.
 	ErrCircularDependencies = errors.New("di: circular dependencies")
 )

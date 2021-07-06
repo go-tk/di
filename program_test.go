@@ -44,16 +44,16 @@ func TestProgram_AddFunction(t *testing.T) {
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Body = func(context.Context) error { return nil }
+				w.ExpectedOutput.ErrStr = ErrInvalidFunction.Error() + ": empty tag"
 				w.ExpectedOutput.Err = ErrInvalidFunction
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty tag"
 			}),
 		tc.Copy().
 			Given("function with nil body").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
+				w.ExpectedOutput.ErrStr = ErrInvalidFunction.Error() + ": nil body; tag=\"foo\""
 				w.ExpectedOutput.Err = ErrInvalidFunction
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil body; tag=\"foo\""
 			}),
 		tc.Copy().
 			Given("argument with empty in-value id").
@@ -63,8 +63,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
 				w.Input.F.Arguments = []Argument{{InValuePtr: &a1}}
-				w.ExpectedOutput.Err = ErrInvalidArgument
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty in-value id; tag=\"foo\""
+				w.ExpectedOutput.ErrStr = ErrInvalidArgument.Error() + ": empty in-value id; tag=\"foo\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("argument without in-value pointer").
@@ -73,8 +73,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Arguments = []Argument{{InValueID: "a1"}}
-				w.ExpectedOutput.Err = ErrInvalidArgument
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no in-value pointer; tag=\"foo\" inValueID=\"a1\""
+				w.ExpectedOutput.ErrStr = ErrInvalidArgument.Error() + ": no in-value pointer; tag=\"foo\" inValueID=\"a1\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("argument with invalid in-value pointer type").
@@ -84,8 +84,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 string
 				w.Input.F.Arguments = []Argument{{InValueID: "a1", InValuePtr: a1}}
-				w.ExpectedOutput.Err = ErrInvalidArgument
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"a1\" inValuePtrType=string"
+				w.ExpectedOutput.ErrStr = ErrInvalidArgument.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"a1\" inValuePtrType=string"
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("argument with nil in-value pointer").
@@ -94,8 +94,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Arguments = []Argument{{InValueID: "a1", InValuePtr: (*int)(nil)}}
-				w.ExpectedOutput.Err = ErrInvalidArgument
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil in-value pointer; tag=\"foo\" inValueID=\"a1\""
+				w.ExpectedOutput.ErrStr = ErrInvalidArgument.Error() + ": nil in-value pointer; tag=\"foo\" inValueID=\"a1\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("result with empty out-value id").
@@ -105,8 +105,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
 				w.Input.F.Results = []Result{{OutValuePtr: &a1}}
-				w.ExpectedOutput.Err = ErrInvalidResult
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty out-value id; tag=\"foo\""
+				w.ExpectedOutput.ErrStr = ErrInvalidResult.Error() + ": empty out-value id; tag=\"foo\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("result without out-value pointer").
@@ -115,8 +115,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Results = []Result{{OutValueID: "r1"}}
-				w.ExpectedOutput.Err = ErrInvalidResult
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no out-value pointer; tag=\"foo\" outValueID=\"r1\""
+				w.ExpectedOutput.ErrStr = ErrInvalidResult.Error() + ": no out-value pointer; tag=\"foo\" outValueID=\"r1\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("result with invalid out-value pointer type").
@@ -126,8 +126,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
 				w.Input.F.Results = []Result{{OutValueID: "r1", OutValuePtr: r1}}
-				w.ExpectedOutput.Err = ErrInvalidResult
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid out-value pointer type; tag=\"foo\" outValueID=\"r1\" outValuePtrType=string"
+				w.ExpectedOutput.ErrStr = ErrInvalidResult.Error() + ": invalid out-value pointer type; tag=\"foo\" outValueID=\"r1\" outValuePtrType=string"
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("result with nil out-value pointer").
@@ -136,8 +136,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Results = []Result{{OutValueID: "r1", OutValuePtr: (*int)(nil)}}
-				w.ExpectedOutput.Err = ErrInvalidResult
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil out-value pointer; tag=\"foo\" outValueID=\"r1\""
+				w.ExpectedOutput.ErrStr = ErrInvalidResult.Error() + ": nil out-value pointer; tag=\"foo\" outValueID=\"r1\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("hook with empty in-value id").
@@ -147,8 +147,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
 				w.Input.F.Hooks = []Hook{{InValuePtr: &a1}}
-				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty in-value id; tag=\"foo\""
+				w.ExpectedOutput.ErrStr = ErrInvalidHook.Error() + ": empty in-value id; tag=\"foo\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("hook without in-value pointer").
@@ -157,8 +157,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Hooks = []Hook{{InValueID: "r1"}}
-				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no in-value pointer; tag=\"foo\" inValueID=\"r1\""
+				w.ExpectedOutput.ErrStr = ErrInvalidHook.Error() + ": no in-value pointer; tag=\"foo\" inValueID=\"r1\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("hook with invalid in-value pointer type").
@@ -168,8 +168,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
 				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: r1}}
-				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"r1\" inValuePtrType=string"
+				w.ExpectedOutput.ErrStr = ErrInvalidHook.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"r1\" inValuePtrType=string"
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("hook with nil in-value pointer").
@@ -178,8 +178,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: (*int)(nil)}}
-				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil in-value pointer; tag=\"foo\" inValueID=\"r1\""
+				w.ExpectedOutput.ErrStr = ErrInvalidHook.Error() + ": nil in-value pointer; tag=\"foo\" inValueID=\"r1\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Given("hook with nil callback pointer").
@@ -189,8 +189,8 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 *int
 				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: &r1}}
-				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil callback pointer; tag=\"foo\" inValueID=\"r1\""
+				w.ExpectedOutput.ErrStr = ErrInvalidHook.Error() + ": nil callback pointer; tag=\"foo\" inValueID=\"r1\""
+				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
 			Then("should succeed").
@@ -248,7 +248,7 @@ func TestProgram_Run(t *testing.T) {
 		})
 	testcase.RunListParallel(t,
 		tc.Copy().
-			When("results with same out-value ids").
+			When("results with identical out-value ids").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				var var1 int
@@ -267,8 +267,8 @@ func TestProgram_Run(t *testing.T) {
 					},
 					Body: func(context.Context) error { return nil },
 				})
+				w.ExpectedOutput.ErrStr = ErrValueAlreadyExists.Error() + "; tag1=\"bar\" tag2=\"foo\" outValueID=\"var\""
 				w.ExpectedOutput.Err = ErrValueAlreadyExists
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" outValueID=\"var\""
 			}),
 		tc.Copy().
 			When("in-value of argument not provisioned").
@@ -295,8 +295,8 @@ func TestProgram_Run(t *testing.T) {
 						Body: func(context.Context) error { return nil },
 					})
 				}
+				w.ExpectedOutput.ErrStr = ErrValueNotFound.Error() + "; tag=\"bar\" inValueID=\"y\""
 				w.ExpectedOutput.Err = ErrValueNotFound
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" inValueID=\"y\""
 			}),
 		tc.Copy().
 			When("in-value of optional argument not provisioned").
@@ -348,8 +348,8 @@ func TestProgram_Run(t *testing.T) {
 						Body: func(context.Context) error { return nil },
 					})
 				}
+				w.ExpectedOutput.ErrStr = ErrValueTypeMismatch.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=string outValueType=int"
 				w.ExpectedOutput.Err = ErrValueTypeMismatch
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=string outValueType=int"
 			}),
 		tc.Copy().
 			When("in-value of hook not provisioned").
@@ -377,8 +377,8 @@ func TestProgram_Run(t *testing.T) {
 						Body: func(context.Context) error { return nil },
 					})
 				}
+				w.ExpectedOutput.ErrStr = ErrValueNotFound.Error() + "; tag=\"bar\" inValueID=\"y\""
 				w.ExpectedOutput.Err = ErrValueNotFound
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" inValueID=\"y\""
 			}),
 		tc.Copy().
 			When("in-value type of hook and out-value type of result not matched").
@@ -423,9 +423,9 @@ func TestProgram_Run(t *testing.T) {
 					},
 					Body: func(context.Context) error { return nil },
 				})
-				w.ExpectedOutput.Err = ErrCircularDependencies
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() +
+				w.ExpectedOutput.ErrStr = ErrCircularDependencies.Error() +
 					"; {tag: \"foo\", argument: \"x\"} => {tag: \"foo\"}"
+				w.ExpectedOutput.Err = ErrCircularDependencies
 			}),
 		tc.Copy().
 			When("circular dependencies exist (2)").
@@ -443,9 +443,9 @@ func TestProgram_Run(t *testing.T) {
 					},
 					Body: func(context.Context) error { return nil },
 				})
-				w.ExpectedOutput.Err = ErrCircularDependencies
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() +
+				w.ExpectedOutput.ErrStr = ErrCircularDependencies.Error() +
 					"; {tag: \"foo\", hook: \"x\"} => {tag: \"foo\"}"
+				w.ExpectedOutput.Err = ErrCircularDependencies
 			}),
 		tc.Copy().
 			When("circular dependencies exist (3)").
@@ -477,9 +477,9 @@ func TestProgram_Run(t *testing.T) {
 						Body: func(context.Context) error { return nil },
 					})
 				}
-				w.ExpectedOutput.Err = ErrCircularDependencies
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() +
+				w.ExpectedOutput.ErrStr = ErrCircularDependencies.Error() +
 					"; {tag: \"foo\", argument: \"x\"} => {tag: \"bar\", argument: \"y\"} => {tag: \"foo\"}"
+				w.ExpectedOutput.Err = ErrCircularDependencies
 			}),
 		tc.Copy().
 			When("circular dependencies exist (4)").
@@ -509,9 +509,9 @@ func TestProgram_Run(t *testing.T) {
 						Body: func(context.Context) error { return nil },
 					})
 				}
-				w.ExpectedOutput.Err = ErrCircularDependencies
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() +
+				w.ExpectedOutput.ErrStr = ErrCircularDependencies.Error() +
 					"; {tag: \"foo\", hook: \"x\"} => {tag: \"bar\", argument: \"x\"} => {tag: \"foo\"}"
+				w.ExpectedOutput.Err = ErrCircularDependencies
 			}),
 		tc.Copy().
 			When("error returned by function body").
@@ -521,8 +521,8 @@ func TestProgram_Run(t *testing.T) {
 					Tag:  "foo",
 					Body: func(context.Context) error { return context.DeadlineExceeded },
 				})
+				w.ExpectedOutput.ErrStr = "di: function failed; tag=\"foo\": " + context.DeadlineExceeded.Error()
 				w.ExpectedOutput.Err = context.DeadlineExceeded
-				w.ExpectedOutput.ErrStr = "di: function failed; tag=\"foo\": " + w.ExpectedOutput.Err.Error()
 			}),
 		tc.Copy().
 			When("nil cleanup").
@@ -537,8 +537,8 @@ func TestProgram_Run(t *testing.T) {
 					},
 					Body: func(context.Context) error { return nil },
 				})
+				w.ExpectedOutput.ErrStr = ErrNilCleanup.Error() + "; tag=\"foo\" outValueID=\"x\""
 				w.ExpectedOutput.Err = ErrNilCleanup
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"foo\" outValueID=\"x\""
 			}),
 		tc.Copy().
 			When("nil callback").
@@ -565,8 +565,8 @@ func TestProgram_Run(t *testing.T) {
 						Body: func(context.Context) error { return nil },
 					})
 				}
+				w.ExpectedOutput.ErrStr = ErrNilCallback.Error() + "; tag=\"bar\" inValueID=\"x\""
 				w.ExpectedOutput.Err = ErrNilCallback
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" inValueID=\"x\""
 			}),
 		tc.Copy().
 			When("callback failed").
@@ -598,8 +598,8 @@ func TestProgram_Run(t *testing.T) {
 						},
 					})
 				}
+				w.ExpectedOutput.ErrStr = "di: callback failed; tag=\"bar\" inValueID=\"x\": " + context.DeadlineExceeded.Error()
 				w.ExpectedOutput.Err = context.DeadlineExceeded
-				w.ExpectedOutput.ErrStr = "di: callback failed; tag=\"bar\" inValueID=\"x\": " + w.ExpectedOutput.Err.Error()
 			}),
 		tc.Copy().
 			Then("should succeed").

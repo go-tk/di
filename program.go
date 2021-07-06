@@ -165,6 +165,11 @@ type hookDesc struct {
 }
 
 var (
-	ErrNilCleanup  = errors.New("di: nil cleanup")
+	// ErrNilCleanup is return by Program.Run() when the cleanup pointed by CleanupPtr
+	// is nil after the Function body is executed.
+	ErrNilCleanup = errors.New("di: nil cleanup")
+
+	// ErrNilCallback is return by Program.Run() when the callback pointed by CallbackPtr
+	// is nil after the Function body is executed.
 	ErrNilCallback = errors.New("di: nil callback")
 )
