@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+eval "$(curl --silent --show-error --fail --location https://raw.githubusercontent.com/go-tk/ci/v1/ci.sh || echo "exit $?")"
