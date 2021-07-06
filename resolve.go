@@ -27,17 +27,17 @@ func (r *resolution12) ExecutePhase1() error {
 
 func (r *resolution12) processResultDesc(resultDesc1 *resultDesc, functionDesc *functionDesc) error {
 	resultDescs := r.ResultDescs
-	if resultDesc2, ok := resultDescs[resultDesc1.ValueID]; ok {
+	if resultDesc2, ok := resultDescs[resultDesc1.OutValueID]; ok {
 		tag := r.FunctionDescs[resultDesc2.FunctionIndex].Tag
-		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q",
-			ErrValueAlreadyExists, functionDesc.Tag, tag, resultDesc1.ValueID)
+		return fmt.Errorf("%w; tag1=%q tag2=%q outValueID=%q",
+			ErrValueAlreadyExists, functionDesc.Tag, tag, resultDesc1.OutValueID)
 	}
 	if resultDescs == nil {
 		resultDescs = make(map[string]*resultDesc)
 		r.ResultDescs = resultDescs
 	}
 	resultDesc1.FunctionIndex = functionDesc.Index
-	resultDescs[resultDesc1.ValueID] = resultDesc1
+	resultDescs[resultDesc1.OutValueID] = resultDesc1
 	return nil
 }
 
@@ -61,39 +61,39 @@ func (r *resolution12) ExecutePhase2() error {
 }
 
 func (r *resolution12) processArgumentDesc(argumentDesc *argumentDesc, functionDesc *functionDesc) error {
-	resultDesc, ok := r.ResultDescs[argumentDesc.ValueID]
+	resultDesc, ok := r.ResultDescs[argumentDesc.InValueID]
 	if !ok {
 		if !argumentDesc.IsOptional {
-			return fmt.Errorf("%w; tag=%q valueID=%q",
-				ErrValueNotFound, functionDesc.Tag, argumentDesc.ValueID)
+			return fmt.Errorf("%w; tag=%q inValueID=%q",
+				ErrValueNotFound, functionDesc.Tag, argumentDesc.InValueID)
 		}
 		return nil
 	}
-	valueType1 := argumentDesc.Value.Type()
-	valueType2 := resultDesc.Value.Type()
-	if valueType1 != valueType2 {
+	inValueType := argumentDesc.InValue.Type()
+	outValueType := resultDesc.OutValue.Type()
+	if inValueType != outValueType {
 		tag := r.FunctionDescs[resultDesc.FunctionIndex].Tag
-		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q valueType1=%v valueType2=%v",
-			ErrValueTypeMismatch, functionDesc.Tag, tag, argumentDesc.ValueID,
-			valueType1, valueType2)
+		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q inValueType=%v outValueType=%v",
+			ErrValueTypeMismatch, functionDesc.Tag, tag, argumentDesc.InValueID,
+			inValueType, outValueType)
 	}
 	argumentDesc.Result = resultDesc
 	return nil
 }
 
 func (r *resolution12) processHookDesc(hookDesc *hookDesc, functionDesc *functionDesc) error {
-	resultDesc, ok := r.ResultDescs[hookDesc.ValueID]
+	resultDesc, ok := r.ResultDescs[hookDesc.InValueID]
 	if !ok {
-		return fmt.Errorf("%w; tag=%q valueID=%q",
-			ErrValueNotFound, functionDesc.Tag, hookDesc.ValueID)
+		return fmt.Errorf("%w; tag=%q inValueID=%q",
+			ErrValueNotFound, functionDesc.Tag, hookDesc.InValueID)
 	}
-	valueType1 := hookDesc.Value.Type()
-	valueType2 := resultDesc.Value.Type()
-	if valueType1 != valueType2 {
+	inValueType := hookDesc.InValue.Type()
+	outValueType := resultDesc.OutValue.Type()
+	if inValueType != outValueType {
 		tag := r.FunctionDescs[resultDesc.FunctionIndex].Tag
-		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q valueType1=%v valueType2=%v",
-			ErrValueTypeMismatch, functionDesc.Tag, tag, hookDesc.ValueID,
-			valueType1, valueType2)
+		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q inValueType=%v outValueType=%v",
+			ErrValueTypeMismatch, functionDesc.Tag, tag, hookDesc.InValueID,
+			inValueType, outValueType)
 	}
 	hookDesc.FunctionIndex = functionDesc.Index
 	resultDesc.Hooks = append(resultDesc.Hooks, hookDesc)
@@ -131,7 +131,7 @@ func (r *resolution3) processFunctionDesc(functionDescIndex int) error {
 		if argumentDesc.Result == nil {
 			continue
 		}
-		r.stackTrace.ReferValue("argument", argumentDesc.ValueID)
+		r.stackTrace.ReferValue("argument", argumentDesc.InValueID)
 		if err := r.processFunctionDesc(argumentDesc.Result.FunctionIndex); err != nil {
 			return err
 		}
@@ -139,7 +139,7 @@ func (r *resolution3) processFunctionDesc(functionDescIndex int) error {
 	for i := range functionDesc.Results {
 		resultDesc := &functionDesc.Results[i]
 		for _, hookDesc := range resultDesc.Hooks {
-			r.stackTrace.ReferValue("hook", hookDesc.ValueID)
+			r.stackTrace.ReferValue("hook", hookDesc.InValueID)
 			if err := r.processFunctionDesc(hookDesc.FunctionIndex); err != nil {
 				return err
 			}

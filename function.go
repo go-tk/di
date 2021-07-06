@@ -13,23 +13,23 @@ type Function struct {
 
 // Argument describes a value the container requires.
 type Argument struct {
-	ValueID    string
-	ValuePtr   interface{}
+	InValueID  string
+	InValuePtr interface{}
 	IsOptional bool
 }
 
 // Argument describes a value the container provides.
 // It is optional to do a cleanup for the value when Program.Clean() is executed.
 type Result struct {
-	ValueID    string
-	ValuePtr   interface{}
-	CleanupPtr *func()
+	OutValueID  string
+	OutValuePtr interface{}
+	CleanupPtr  *func()
 }
 
 // Hook describes a callback which should be called once the value is created but
 // has not yet been provisioned to other Functions.
 type Hook struct {
-	ValueID     string
-	ValuePtr    interface{}
+	InValueID   string
+	InValuePtr  interface{}
 	CallbackPtr *func(ctx context.Context) (err error)
 }

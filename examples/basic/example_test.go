@@ -27,7 +27,7 @@ func Foo() di.Function {
 	return di.Function{
 		Tag: "foo",
 		Results: []di.Result{
-			{ValueID: "x", ValuePtr: &x},
+			{OutValueID: "x", OutValuePtr: &x},
 		},
 		Body: func(_ context.Context) error {
 			x = 100
@@ -43,10 +43,10 @@ func Bar() di.Function {
 	return di.Function{
 		Tag: "bar",
 		Arguments: []di.Argument{
-			{ValueID: "x", ValuePtr: &x},
+			{InValueID: "x", InValuePtr: &x},
 		},
 		Results: []di.Result{
-			{ValueID: "y", ValuePtr: &y},
+			{OutValueID: "y", OutValuePtr: &y},
 		},
 		Body: func(_ context.Context) error {
 			y = 2 * x
@@ -63,11 +63,11 @@ func Baz() di.Function {
 	return di.Function{
 		Tag: "baz",
 		Arguments: []di.Argument{
-			{ValueID: "x", ValuePtr: &x},
-			{ValueID: "y", ValuePtr: &y},
+			{InValueID: "x", InValuePtr: &x},
+			{InValueID: "y", InValuePtr: &y},
 		},
 		Results: []di.Result{
-			{ValueID: "z", ValuePtr: &z},
+			{OutValueID: "z", OutValuePtr: &z},
 		},
 		Body: func(_ context.Context) error {
 			z = x + y
@@ -84,9 +84,9 @@ func Qux() di.Function {
 	return di.Function{
 		Tag: "baz",
 		Arguments: []di.Argument{
-			{ValueID: "x", ValuePtr: &x},
-			{ValueID: "y", ValuePtr: &y},
-			{ValueID: "z", ValuePtr: &z},
+			{InValueID: "x", InValuePtr: &x},
+			{InValueID: "y", InValuePtr: &y},
+			{InValueID: "z", InValuePtr: &z},
 		},
 		Body: func(_ context.Context) error {
 			fmt.Printf("x, y, z = %d, %d, %d\n", x, y, z)

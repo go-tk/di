@@ -31,7 +31,7 @@ func Foo() di.Function {
 	return di.Function{
 		Tag: "foo",
 		Results: []di.Result{
-			{ValueID: "temp-dir-name", ValuePtr: &tempDirName, CleanupPtr: &cleanup},
+			{OutValueID: "temp-dir-name", OutValuePtr: &tempDirName, CleanupPtr: &cleanup},
 		},
 		Body: func(_ context.Context) error {
 			fmt.Println("create temp dir")
@@ -53,10 +53,10 @@ func Bar() di.Function {
 	return di.Function{
 		Tag: "bar",
 		Arguments: []di.Argument{
-			{ValueID: "temp-dir-name", ValuePtr: &tempDirName},
+			{InValueID: "temp-dir-name", InValuePtr: &tempDirName},
 		},
 		Results: []di.Result{
-			{ValueID: "temp-file", ValuePtr: &tempFile, CleanupPtr: &cleanup},
+			{OutValueID: "temp-file", OutValuePtr: &tempFile, CleanupPtr: &cleanup},
 		},
 		Body: func(_ context.Context) error {
 			fmt.Println("create and open temp file")
@@ -77,7 +77,7 @@ func Baz() di.Function {
 	return di.Function{
 		Tag: "baz",
 		Arguments: []di.Argument{
-			{ValueID: "temp-file", ValuePtr: &tempFile},
+			{InValueID: "temp-file", InValuePtr: &tempFile},
 		},
 		Body: func(_ context.Context) error {
 			fmt.Println("write temp file")

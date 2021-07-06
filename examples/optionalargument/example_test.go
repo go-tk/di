@@ -22,7 +22,7 @@ func Foo() di.Function {
 	return di.Function{
 		Tag: "foo",
 		Results: []di.Result{
-			{ValueID: "y", ValuePtr: &y},
+			{OutValueID: "y", OutValuePtr: &y},
 		},
 		Body: func(_ context.Context) error {
 			y = 199
@@ -37,8 +37,8 @@ func Bar() di.Function {
 	return di.Function{
 		Tag: "bar",
 		Arguments: []di.Argument{
-			{ValueID: "x", ValuePtr: &x, IsOptional: true},
-			{ValueID: "y", ValuePtr: &y},
+			{InValueID: "x", InValuePtr: &x, IsOptional: true},
+			{InValueID: "y", InValuePtr: &y},
 		},
 		Body: func(_ context.Context) error {
 			fmt.Printf("y - x = %d\n", y-x)

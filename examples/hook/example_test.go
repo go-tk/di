@@ -24,7 +24,7 @@ func Foo() di.Function {
 	return di.Function{
 		Tag: "foo",
 		Results: []di.Result{
-			{ValueID: "user-name-list", ValuePtr: &userNameList},
+			{OutValueID: "user-name-list", OutValuePtr: &userNameList},
 		},
 		Body: func(_ context.Context) error {
 			userNameList = &[]string{"tom", "jeff"}
@@ -38,7 +38,7 @@ func Bar() di.Function {
 	return di.Function{
 		Tag: "bar",
 		Results: []di.Result{
-			{ValueID: "additional-user-name", ValuePtr: &additionalUserName},
+			{OutValueID: "additional-user-name", OutValuePtr: &additionalUserName},
 		},
 		Body: func(_ context.Context) error {
 			additionalUserName = "kim"
@@ -52,7 +52,7 @@ func Baz() di.Function {
 	return di.Function{
 		Tag: "baz",
 		Arguments: []di.Argument{
-			{ValueID: "user-name-list", ValuePtr: &userNameList},
+			{InValueID: "user-name-list", InValuePtr: &userNameList},
 		},
 		Body: func(_ context.Context) error {
 			fmt.Printf("user name list: %v\n", *userNameList)
@@ -68,10 +68,10 @@ func Qux() di.Function {
 	return di.Function{
 		Tag: "qux",
 		Arguments: []di.Argument{
-			{ValueID: "additional-user-name", ValuePtr: &additionalUserName},
+			{InValueID: "additional-user-name", InValuePtr: &additionalUserName},
 		},
 		Hooks: []di.Hook{
-			{ValueID: "user-name-list", ValuePtr: &userNameList, CallbackPtr: &callback},
+			{InValueID: "user-name-list", InValuePtr: &userNameList, CallbackPtr: &callback},
 		},
 		Body: func(_ context.Context) error {
 			callback = func(_ context.Context) error {

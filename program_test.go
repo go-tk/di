@@ -56,130 +56,130 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil body; tag=\"foo\""
 			}),
 		tc.Copy().
-			Given("argument with empty value id").
+			Given("argument with empty in-value id").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
-				w.Input.F.Arguments = []Argument{{ValuePtr: &a1}}
+				w.Input.F.Arguments = []Argument{{InValuePtr: &a1}}
 				w.ExpectedOutput.Err = ErrInvalidArgument
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty value id; tag=\"foo\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty in-value id; tag=\"foo\""
 			}),
 		tc.Copy().
-			Given("argument without value pointer").
+			Given("argument without in-value pointer").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
-				w.Input.F.Arguments = []Argument{{ValueID: "a1"}}
+				w.Input.F.Arguments = []Argument{{InValueID: "a1"}}
 				w.ExpectedOutput.Err = ErrInvalidArgument
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no value pointer; tag=\"foo\" valueID=\"a1\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no in-value pointer; tag=\"foo\" inValueID=\"a1\""
 			}),
 		tc.Copy().
-			Given("argument with invalid value pointer type").
+			Given("argument with invalid in-value pointer type").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 string
-				w.Input.F.Arguments = []Argument{{ValueID: "a1", ValuePtr: a1}}
+				w.Input.F.Arguments = []Argument{{InValueID: "a1", InValuePtr: a1}}
 				w.ExpectedOutput.Err = ErrInvalidArgument
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid value pointer type; tag=\"foo\" valueID=\"a1\" valuePtrType=string"
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"a1\" inValuePtrType=string"
 			}),
 		tc.Copy().
-			Given("argument with nil value pointer").
+			Given("argument with nil in-value pointer").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
-				w.Input.F.Arguments = []Argument{{ValueID: "a1", ValuePtr: (*int)(nil)}}
+				w.Input.F.Arguments = []Argument{{InValueID: "a1", InValuePtr: (*int)(nil)}}
 				w.ExpectedOutput.Err = ErrInvalidArgument
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil value pointer; tag=\"foo\" valueID=\"a1\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil in-value pointer; tag=\"foo\" inValueID=\"a1\""
 			}),
 		tc.Copy().
-			Given("result with empty value id").
+			Given("result with empty out-value id").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
-				w.Input.F.Results = []Result{{ValuePtr: &a1}}
+				w.Input.F.Results = []Result{{OutValuePtr: &a1}}
 				w.ExpectedOutput.Err = ErrInvalidResult
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty value id; tag=\"foo\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty out-value id; tag=\"foo\""
 			}),
 		tc.Copy().
-			Given("result without value pointer").
+			Given("result without out-value pointer").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
-				w.Input.F.Results = []Result{{ValueID: "r1"}}
+				w.Input.F.Results = []Result{{OutValueID: "r1"}}
 				w.ExpectedOutput.Err = ErrInvalidResult
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no value pointer; tag=\"foo\" valueID=\"r1\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no out-value pointer; tag=\"foo\" outValueID=\"r1\""
 			}),
 		tc.Copy().
-			Given("result with invalid value pointer type").
+			Given("result with invalid out-value pointer type").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
-				w.Input.F.Results = []Result{{ValueID: "r1", ValuePtr: r1}}
+				w.Input.F.Results = []Result{{OutValueID: "r1", OutValuePtr: r1}}
 				w.ExpectedOutput.Err = ErrInvalidResult
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid value pointer type; tag=\"foo\" valueID=\"r1\" valuePtrType=string"
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid out-value pointer type; tag=\"foo\" outValueID=\"r1\" outValuePtrType=string"
 			}),
 		tc.Copy().
-			Given("result with nil value pointer").
+			Given("result with nil out-value pointer").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
-				w.Input.F.Results = []Result{{ValueID: "r1", ValuePtr: (*int)(nil)}}
+				w.Input.F.Results = []Result{{OutValueID: "r1", OutValuePtr: (*int)(nil)}}
 				w.ExpectedOutput.Err = ErrInvalidResult
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil value pointer; tag=\"foo\" valueID=\"r1\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil out-value pointer; tag=\"foo\" outValueID=\"r1\""
 			}),
 		tc.Copy().
-			Given("hook with empty value id").
+			Given("hook with empty in-value id").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
-				w.Input.F.Hooks = []Hook{{ValuePtr: &a1}}
+				w.Input.F.Hooks = []Hook{{InValuePtr: &a1}}
 				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty value id; tag=\"foo\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": empty in-value id; tag=\"foo\""
 			}),
 		tc.Copy().
-			Given("hook without value pointer").
+			Given("hook without in-value pointer").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
-				w.Input.F.Hooks = []Hook{{ValueID: "r1"}}
+				w.Input.F.Hooks = []Hook{{InValueID: "r1"}}
 				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no value pointer; tag=\"foo\" valueID=\"r1\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": no in-value pointer; tag=\"foo\" inValueID=\"r1\""
 			}),
 		tc.Copy().
-			Given("hook with invalid value pointer type").
+			Given("hook with invalid in-value pointer type").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
-				w.Input.F.Hooks = []Hook{{ValueID: "r1", ValuePtr: r1}}
+				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: r1}}
 				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid value pointer type; tag=\"foo\" valueID=\"r1\" valuePtrType=string"
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"r1\" inValuePtrType=string"
 			}),
 		tc.Copy().
-			Given("hook with nil value pointer").
+			Given("hook with nil in-value pointer").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
-				w.Input.F.Hooks = []Hook{{ValueID: "r1", ValuePtr: (*int)(nil)}}
+				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: (*int)(nil)}}
 				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil value pointer; tag=\"foo\" valueID=\"r1\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil in-value pointer; tag=\"foo\" inValueID=\"r1\""
 			}),
 		tc.Copy().
 			Given("hook with nil callback pointer").
@@ -188,9 +188,9 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 *int
-				w.Input.F.Hooks = []Hook{{ValueID: "r1", ValuePtr: &r1}}
+				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: &r1}}
 				w.ExpectedOutput.Err = ErrInvalidHook
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil callback pointer; tag=\"foo\" valueID=\"r1\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + ": nil callback pointer; tag=\"foo\" inValueID=\"r1\""
 			}),
 		tc.Copy().
 			Then("should succeed").
@@ -198,11 +198,11 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 *int
-				w.Input.F.Arguments = []Argument{{ValueID: "a1", ValuePtr: &a1}}
+				w.Input.F.Arguments = []Argument{{InValueID: "a1", InValuePtr: &a1}}
 				var r1 *int
-				w.Input.F.Results = []Result{{ValueID: "r1", ValuePtr: &r1}}
+				w.Input.F.Results = []Result{{OutValueID: "r1", OutValuePtr: &r1}}
 				cb := func(context.Context) error { return nil }
-				w.Input.F.Hooks = []Hook{{ValueID: "r1", ValuePtr: &r1, CallbackPtr: &cb}}
+				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: &r1, CallbackPtr: &cb}}
 			}),
 	)
 }
@@ -248,7 +248,7 @@ func TestProgram_Run(t *testing.T) {
 		})
 	testcase.RunListParallel(t,
 		tc.Copy().
-			When("results with same value ids").
+			When("results with same out-value ids").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				var var1 int
@@ -256,22 +256,22 @@ func TestProgram_Run(t *testing.T) {
 				w.P.MustAddFunction(Function{
 					Tag: "foo",
 					Results: []Result{
-						{ValueID: "var", ValuePtr: &var1},
+						{OutValueID: "var", OutValuePtr: &var1},
 					},
 					Body: func(context.Context) error { return nil },
 				})
 				w.P.MustAddFunction(Function{
 					Tag: "bar",
 					Results: []Result{
-						{ValueID: "var", ValuePtr: &var2},
+						{OutValueID: "var", OutValuePtr: &var2},
 					},
 					Body: func(context.Context) error { return nil },
 				})
 				w.ExpectedOutput.Err = ErrValueAlreadyExists
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"var\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" outValueID=\"var\""
 			}),
 		tc.Copy().
-			When("value of argument not provisioned").
+			When("in-value of argument not provisioned").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -279,7 +279,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -289,17 +289,17 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Arguments: []Argument{
-							{ValueID: "x", ValuePtr: &x},
-							{ValueID: "y", ValuePtr: &y},
+							{InValueID: "x", InValuePtr: &x},
+							{InValueID: "y", InValuePtr: &y},
 						},
 						Body: func(context.Context) error { return nil },
 					})
 				}
 				w.ExpectedOutput.Err = ErrValueNotFound
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" valueID=\"y\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" inValueID=\"y\""
 			}),
 		tc.Copy().
-			When("value of optional argument not provisioned").
+			When("in-value of optional argument not provisioned").
 			Then("should not fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -307,7 +307,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -317,15 +317,15 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Arguments: []Argument{
-							{ValueID: "x", ValuePtr: &x},
-							{ValueID: "y", ValuePtr: &y, IsOptional: true},
+							{InValueID: "x", InValuePtr: &x},
+							{InValueID: "y", InValuePtr: &y, IsOptional: true},
 						},
 						Body: func(context.Context) error { return nil },
 					})
 				}
 			}),
 		tc.Copy().
-			When("value types of argument and result not matched").
+			When("in-value type of argument and out-value type of result not matched").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -333,7 +333,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -343,16 +343,16 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Arguments: []Argument{
-							{ValueID: "x", ValuePtr: &x},
+							{InValueID: "x", InValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
 				}
 				w.ExpectedOutput.Err = ErrValueTypeMismatch
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" valueType1=string valueType2=int"
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=string outValueType=int"
 			}),
 		tc.Copy().
-			When("value of hook not provisioned").
+			When("in-value of hook not provisioned").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -360,7 +360,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -371,17 +371,17 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Hooks: []Hook{
-							{ValueID: "x", ValuePtr: &x, CallbackPtr: &cb},
-							{ValueID: "y", ValuePtr: &y, CallbackPtr: &cb},
+							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
+							{InValueID: "y", InValuePtr: &y, CallbackPtr: &cb},
 						},
 						Body: func(context.Context) error { return nil },
 					})
 				}
 				w.ExpectedOutput.Err = ErrValueNotFound
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" valueID=\"y\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" inValueID=\"y\""
 			}),
 		tc.Copy().
-			When("value types of hook and result not matched").
+			When("in-value type of hook and out-value type of result not matched").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -389,7 +389,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -400,13 +400,13 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Hooks: []Hook{
-							{ValueID: "x", ValuePtr: &x, CallbackPtr: &cb},
+							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
 						},
 						Body: func(context.Context) error { return nil },
 					})
 				}
 				w.ExpectedOutput.Err = ErrValueTypeMismatch
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" valueType1=string valueType2=int"
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=string outValueType=int"
 			}),
 		tc.Copy().
 			When("circular dependencies exist (1)").
@@ -416,10 +416,10 @@ func TestProgram_Run(t *testing.T) {
 				w.P.MustAddFunction(Function{
 					Tag: "foo",
 					Arguments: []Argument{
-						{ValueID: "x", ValuePtr: &x},
+						{InValueID: "x", InValuePtr: &x},
 					},
 					Results: []Result{
-						{ValueID: "x", ValuePtr: &x},
+						{OutValueID: "x", OutValuePtr: &x},
 					},
 					Body: func(context.Context) error { return nil },
 				})
@@ -436,10 +436,10 @@ func TestProgram_Run(t *testing.T) {
 				w.P.MustAddFunction(Function{
 					Tag: "foo",
 					Results: []Result{
-						{ValueID: "x", ValuePtr: &x},
+						{OutValueID: "x", OutValuePtr: &x},
 					},
 					Hooks: []Hook{
-						{ValueID: "x", ValuePtr: &x, CallbackPtr: &cb},
+						{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
 					},
 					Body: func(context.Context) error { return nil },
 				})
@@ -456,10 +456,10 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Arguments: []Argument{
-							{ValueID: "x", ValuePtr: &x},
+							{InValueID: "x", InValuePtr: &x},
 						},
 						Results: []Result{
-							{ValueID: "y", ValuePtr: &y},
+							{OutValueID: "y", OutValuePtr: &y},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -469,10 +469,10 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Arguments: []Argument{
-							{ValueID: "y", ValuePtr: &y},
+							{InValueID: "y", InValuePtr: &y},
 						},
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -490,7 +490,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -501,10 +501,10 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Arguments: []Argument{
-							{ValueID: "x", ValuePtr: &x},
+							{InValueID: "x", InValuePtr: &x},
 						},
 						Hooks: []Hook{
-							{ValueID: "x", ValuePtr: &x, CallbackPtr: &cb},
+							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -533,12 +533,12 @@ func TestProgram_Run(t *testing.T) {
 				w.P.MustAddFunction(Function{
 					Tag: "foo",
 					Results: []Result{
-						{ValueID: "x", ValuePtr: &x, CleanupPtr: &c},
+						{OutValueID: "x", OutValuePtr: &x, CleanupPtr: &c},
 					},
 					Body: func(context.Context) error { return nil },
 				})
 				w.ExpectedOutput.Err = ErrNilCleanup
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"foo\" valueID=\"x\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"foo\" outValueID=\"x\""
 			}),
 		tc.Copy().
 			When("nil callback").
@@ -549,7 +549,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -560,13 +560,13 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Hooks: []Hook{
-							{ValueID: "x", ValuePtr: &x, CallbackPtr: &cb},
+							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
 						},
 						Body: func(context.Context) error { return nil },
 					})
 				}
 				w.ExpectedOutput.Err = ErrNilCallback
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" valueID=\"x\""
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag=\"bar\" inValueID=\"x\""
 			}),
 		tc.Copy().
 			When("callback failed").
@@ -577,7 +577,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
 						Body: func(context.Context) error { return nil },
 					})
@@ -588,7 +588,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Hooks: []Hook{
-							{ValueID: "x", ValuePtr: &x, CallbackPtr: &cb},
+							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
 						},
 						Body: func(context.Context) error {
 							cb = func(context.Context) error {
@@ -599,7 +599,7 @@ func TestProgram_Run(t *testing.T) {
 					})
 				}
 				w.ExpectedOutput.Err = context.DeadlineExceeded
-				w.ExpectedOutput.ErrStr = "di: callback failed; tag=\"bar\" valueID=\"x\": " + w.ExpectedOutput.Err.Error()
+				w.ExpectedOutput.ErrStr = "di: callback failed; tag=\"bar\" inValueID=\"x\": " + w.ExpectedOutput.Err.Error()
 			}),
 		tc.Copy().
 			Then("should succeed").
@@ -611,8 +611,8 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Arguments: []Argument{
-							{ValueID: "x", ValuePtr: &x},
-							{ValueID: "y", ValuePtr: &y},
+							{InValueID: "x", InValuePtr: &x},
+							{InValueID: "y", InValuePtr: &y},
 						},
 						Body: func(context.Context) error {
 							s += "5"
@@ -628,10 +628,10 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Arguments: []Argument{
-							{ValueID: "x", ValuePtr: &x},
+							{InValueID: "x", InValuePtr: &x},
 						},
 						Results: []Result{
-							{ValueID: "y", ValuePtr: &y, CleanupPtr: &c},
+							{OutValueID: "y", OutValuePtr: &y, CleanupPtr: &c},
 						},
 						Body: func(context.Context) error {
 							s += "3"
@@ -648,7 +648,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "baz",
 						Results: []Result{
-							{ValueID: "x", ValuePtr: &x, CleanupPtr: &c},
+							{OutValueID: "x", OutValuePtr: &x, CleanupPtr: &c},
 						},
 						Body: func(context.Context) error {
 							s += "1"
@@ -664,7 +664,7 @@ func TestProgram_Run(t *testing.T) {
 					w.P.MustAddFunction(Function{
 						Tag: "qux",
 						Hooks: []Hook{
-							{ValueID: "y", ValuePtr: &y, CallbackPtr: &cb},
+							{InValueID: "y", InValuePtr: &y, CallbackPtr: &cb},
 						},
 						Body: func(context.Context) error {
 							s += "2"

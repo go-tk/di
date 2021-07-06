@@ -80,7 +80,7 @@ func (p *Program) callFunctions(ctx context.Context) (int, error) {
 			if argumentDesc.Result == nil {
 				continue
 			}
-			argumentDesc.Value.Set(argumentDesc.Result.Value)
+			argumentDesc.InValue.Set(argumentDesc.Result.OutValue)
 		}
 		if err := functionDesc.Body(ctx); err != nil {
 			return i, fmt.Errorf("di: function failed; tag=%q: %w", functionDesc.Tag, err)
@@ -89,25 +89,25 @@ func (p *Program) callFunctions(ctx context.Context) (int, error) {
 		for j := range functionDesc.Results {
 			resultDesc := &functionDesc.Results[j]
 			if resultDesc.CleanupPtr != nil && *resultDesc.CleanupPtr == nil {
-				return i, fmt.Errorf("%w; tag=%q valueID=%q",
-					ErrNilCleanup, functionDesc.Tag, resultDesc.ValueID)
+				return i, fmt.Errorf("%w; tag=%q outValueID=%q",
+					ErrNilCleanup, functionDesc.Tag, resultDesc.OutValueID)
 			}
 		}
 		for j := range functionDesc.Hooks {
 			hookDesc := &functionDesc.Hooks[j]
 			if *hookDesc.CallbackPtr == nil {
-				return i, fmt.Errorf("%w; tag=%q valueID=%q",
-					ErrNilCallback, functionDesc.Tag, hookDesc.ValueID)
+				return i, fmt.Errorf("%w; tag=%q inValueID=%q",
+					ErrNilCallback, functionDesc.Tag, hookDesc.InValueID)
 			}
 		}
 		for j := range functionDesc.Results {
 			resultDesc := &functionDesc.Results[j]
 			for _, hookDesc := range resultDesc.Hooks {
-				hookDesc.Value.Set(resultDesc.Value)
+				hookDesc.InValue.Set(resultDesc.OutValue)
 				if err := (*hookDesc.CallbackPtr)(ctx); err != nil {
 					tag := p.functionDescs[hookDesc.FunctionIndex].Tag
-					return i, fmt.Errorf("di: callback failed; tag=%q valueID=%q: %w",
-						tag, resultDesc.ValueID, err)
+					return i, fmt.Errorf("di: callback failed; tag=%q inValueID=%q: %w",
+						tag, hookDesc.InValueID, err)
 				}
 			}
 		}
@@ -143,23 +143,23 @@ type functionDesc struct {
 }
 
 type argumentDesc struct {
-	ValueID    string
-	Value      reflect.Value
+	InValueID  string
+	InValue    reflect.Value
 	IsOptional bool
 	Result     *resultDesc
 }
 
 type resultDesc struct {
-	ValueID       string
-	Value         reflect.Value
+	OutValueID    string
+	OutValue      reflect.Value
 	CleanupPtr    *func()
 	FunctionIndex int
 	Hooks         []*hookDesc
 }
 
 type hookDesc struct {
-	ValueID       string
-	Value         reflect.Value
+	InValueID     string
+	InValue       reflect.Value
 	CallbackPtr   *func(context.Context) error
 	FunctionIndex int
 }
