@@ -248,7 +248,7 @@ func TestProgram_Run(t *testing.T) {
 		})
 	testcase.RunListParallel(t,
 		tc.Copy().
-			When("results with identical out-value ids").
+			Given("results with identical out-value ids").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				var var1 int
@@ -271,7 +271,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrValueAlreadyExists
 			}),
 		tc.Copy().
-			When("in-value of argument not provisioned").
+			Given("in-value of argument not provisioned").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -299,7 +299,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrValueNotFound
 			}),
 		tc.Copy().
-			When("in-value of optional argument not provisioned").
+			Given("in-value of optional argument not provisioned").
 			Then("should not fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -325,7 +325,7 @@ func TestProgram_Run(t *testing.T) {
 				}
 			}),
 		tc.Copy().
-			When("in-value type of argument and out-value type of result not matched").
+			Given("in-value type of argument and out-value type of result not matched").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -352,7 +352,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrValueTypeMismatch
 			}),
 		tc.Copy().
-			When("in-value of hook not provisioned").
+			Given("in-value of hook not provisioned").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -381,7 +381,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrValueNotFound
 			}),
 		tc.Copy().
-			When("in-value type of hook and out-value type of result not matched").
+			Given("in-value type of hook and out-value type of result not matched").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -409,7 +409,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=string outValueType=int"
 			}),
 		tc.Copy().
-			When("circular dependencies exist (1)").
+			Given("circular dependencies (1)").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				var x int
@@ -428,7 +428,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrCircularDependencies
 			}),
 		tc.Copy().
-			When("circular dependencies exist (2)").
+			Given("circular dependencies (2)").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				var x int
@@ -448,7 +448,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrCircularDependencies
 			}),
 		tc.Copy().
-			When("circular dependencies exist (3)").
+			Given("circular dependencies (3)").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -482,7 +482,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrCircularDependencies
 			}),
 		tc.Copy().
-			When("circular dependencies exist (4)").
+			Given("circular dependencies (4)").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -514,7 +514,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrCircularDependencies
 			}),
 		tc.Copy().
-			When("error returned by function body").
+			Given("function body returning error").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				w.P.MustAddFunction(Function{
@@ -525,7 +525,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = context.DeadlineExceeded
 			}),
 		tc.Copy().
-			When("nil cleanup").
+			Given("function body not provisioning cleanup").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				var x int
@@ -541,7 +541,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrNilCleanup
 			}),
 		tc.Copy().
-			When("nil callback").
+			Given("function body not provisioning callback").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -569,7 +569,7 @@ func TestProgram_Run(t *testing.T) {
 				w.ExpectedOutput.Err = ErrNilCallback
 			}),
 		tc.Copy().
-			When("callback failed").
+			Given("function body provisioning callback returning error").
 			Then("should fail").
 			AddTask(1999, func(w *Workspace) {
 				{
@@ -605,7 +605,11 @@ func TestProgram_Run(t *testing.T) {
 			Then("should succeed").
 			AddTask(1999, func(w *Workspace) {
 				var s string
-				w.AddCleanup(func() { assert.Equal(w.T(), "1234567", s) })
+				w.AddCleanup(func() {
+					if !w.T().Failed() {
+						assert.Equal(w.T(), "1234567", s)
+					}
+				})
 				{
 					var x, y int
 					w.P.MustAddFunction(Function{
