@@ -37,11 +37,14 @@ func Foo() di.Function {
 			fmt.Println("create temp dir")
 			var err error
 			tempDirName, err = ioutil.TempDir("", "")
+			if err != nil {
+				return err
+			}
 			cleanup = func() {
 				fmt.Println("delete temp dir")
 				os.Remove(tempDirName)
 			}
-			return err
+			return nil
 		},
 	}
 }
@@ -62,12 +65,15 @@ func Bar() di.Function {
 			fmt.Println("create and open temp file")
 			var err error
 			tempFile, err = os.Create(filepath.Join(tempDirName, "temp"))
+			if err != nil {
+				return err
+			}
 			cleanup = func() {
 				fmt.Println("close and delete temp file")
 				tempFile.Close()
 				os.Remove(tempFile.Name())
 			}
-			return err
+			return nil
 		},
 	}
 }
