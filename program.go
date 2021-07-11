@@ -37,7 +37,7 @@ func (p *Program) Run(ctx context.Context) error {
 		return err
 	}
 	if n, err := p.callFunctions(ctx); err != nil {
-		p.doClean(n)
+		p.doCleanups(n)
 		return err
 	}
 	return nil
@@ -75,52 +75,80 @@ func (p *Program) callFunctions(ctx context.Context) (int, error) {
 	for n := len(p.orderedFunctionDescIndexes); i < n; {
 		functionDescIndex := p.orderedFunctionDescIndexes[i]
 		functionDesc := &p.functionDescs[functionDescIndex]
-		for j := range functionDesc.Arguments {
-			argumentDesc := &functionDesc.Arguments[j]
-			if argumentDesc.Result == nil {
-				continue
-			}
-			argumentDesc.InValue.Set(argumentDesc.Result.OutValue)
-		}
-		if err := functionDesc.Body(ctx); err != nil {
-			return i, fmt.Errorf("di: function failed; tag=%q: %w", functionDesc.Tag, err)
+		if err := callFunction(ctx, functionDesc); err != nil {
+			return i, err
 		}
 		i++
-		for j := range functionDesc.Results {
-			resultDesc := &functionDesc.Results[j]
-			if resultDesc.CleanupPtr != nil && *resultDesc.CleanupPtr == nil {
-				return i, fmt.Errorf("%w; tag=%q outValueID=%q",
-					ErrNilCleanup, functionDesc.Tag, resultDesc.OutValueID)
-			}
+		if err := checkCleanups(functionDesc); err != nil {
+			return i, err
 		}
-		for j := range functionDesc.Hooks {
-			hookDesc := &functionDesc.Hooks[j]
-			if *hookDesc.CallbackPtr == nil {
-				return i, fmt.Errorf("%w; tag=%q inValueID=%q",
-					ErrNilCallback, functionDesc.Tag, hookDesc.InValueID)
-			}
+		if err := checkCallbacks(functionDesc); err != nil {
+			return i, err
 		}
-		for j := range functionDesc.Results {
-			resultDesc := &functionDesc.Results[j]
-			for _, hookDesc := range resultDesc.Hooks {
-				hookDesc.InValue.Set(resultDesc.OutValue)
-				if err := (*hookDesc.CallbackPtr)(ctx); err != nil {
-					tag := p.functionDescs[hookDesc.FunctionIndex].Tag
-					return i, fmt.Errorf("di: callback failed; tag=%q inValueID=%q: %w",
-						tag, hookDesc.InValueID, err)
-				}
-			}
+		if err := p.doCallbacks(ctx, functionDesc); err != nil {
+			return i, err
 		}
 	}
 	return i, nil
 }
 
-// Clean does cleanups associated with Results.
-func (p *Program) Clean() {
-	p.doClean(len(p.orderedFunctionDescIndexes))
+func callFunction(ctx context.Context, functionDesc *functionDesc) error {
+	for i := range functionDesc.Arguments {
+		argumentDesc := &functionDesc.Arguments[i]
+		if argumentDesc.Result == nil {
+			continue
+		}
+		argumentDesc.InValue.Set(argumentDesc.Result.OutValue)
+	}
+	if err := functionDesc.Body(ctx); err != nil {
+		return fmt.Errorf("di: function failed; tag=%q: %w", functionDesc.Tag, err)
+	}
+	return nil
 }
 
-func (p *Program) doClean(n int) {
+func checkCleanups(functionDesc *functionDesc) error {
+	for i := range functionDesc.Results {
+		resultDesc := &functionDesc.Results[i]
+		if resultDesc.CleanupPtr != nil && *resultDesc.CleanupPtr == nil {
+			return fmt.Errorf("%w; tag=%q outValueID=%q",
+				ErrNilCleanup, functionDesc.Tag, resultDesc.OutValueID)
+		}
+	}
+	return nil
+}
+
+func checkCallbacks(functionDesc *functionDesc) error {
+	for i := range functionDesc.Hooks {
+		hookDesc := &functionDesc.Hooks[i]
+		if *hookDesc.CallbackPtr == nil {
+			return fmt.Errorf("%w; tag=%q inValueID=%q",
+				ErrNilCallback, functionDesc.Tag, hookDesc.InValueID)
+		}
+	}
+	return nil
+}
+
+func (p *Program) doCallbacks(ctx context.Context, functionDesc *functionDesc) error {
+	for j := range functionDesc.Results {
+		resultDesc := &functionDesc.Results[j]
+		for _, hookDesc := range resultDesc.Hooks {
+			hookDesc.InValue.Set(resultDesc.OutValue)
+			if err := (*hookDesc.CallbackPtr)(ctx); err != nil {
+				tag := p.functionDescs[hookDesc.FunctionIndex].Tag
+				return fmt.Errorf("di: callback failed; tag=%q inValueID=%q: %w",
+					tag, hookDesc.InValueID, err)
+			}
+		}
+	}
+	return nil
+}
+
+// Clean does cleanups associated with Results.
+func (p *Program) Clean() {
+	p.doCleanups(len(p.orderedFunctionDescIndexes))
+}
+
+func (p *Program) doCleanups(n int) {
 	for i := n - 1; i >= 0; i-- {
 		functionDescIndex := p.orderedFunctionDescIndexes[i]
 		functionDesc := &p.functionDescs[functionDescIndex]
