@@ -11,6 +11,7 @@ import (
 type Program struct {
 	functionDescs              []functionDesc
 	orderedFunctionDescIndexes []int
+	calledFunctionCount        int
 }
 
 // AddFunction adds a Function into the Program.
@@ -36,8 +37,7 @@ func (p *Program) Run(ctx context.Context) error {
 	if err := p.resolve(); err != nil {
 		return err
 	}
-	if n, err := p.callFunctions(ctx); err != nil {
-		p.doCleanups(n)
+	if err := p.callFunctions(ctx); err != nil {
 		return err
 	}
 	return nil
@@ -70,29 +70,27 @@ func (p *Program) resolve() error {
 	return nil
 }
 
-func (p *Program) callFunctions(ctx context.Context) (int, error) {
-	var i int
-	for n := len(p.orderedFunctionDescIndexes); i < n; {
+func (p *Program) callFunctions(ctx context.Context) error {
+	for i, n := 0, len(p.orderedFunctionDescIndexes); i < n; i++ {
 		functionDescIndex := p.orderedFunctionDescIndexes[i]
 		functionDesc := &p.functionDescs[functionDescIndex]
-		if err := callFunction(ctx, functionDesc); err != nil {
-			return i, err
+		if err := p.callFunction(ctx, functionDesc); err != nil {
+			return err
 		}
-		i++
 		if err := checkCleanups(functionDesc); err != nil {
-			return i, err
+			return err
 		}
 		if err := checkCallbacks(functionDesc); err != nil {
-			return i, err
+			return err
 		}
 		if err := p.doCallbacks(ctx, functionDesc); err != nil {
-			return i, err
+			return err
 		}
 	}
-	return i, nil
+	return nil
 }
 
-func callFunction(ctx context.Context, functionDesc *functionDesc) error {
+func (p *Program) callFunction(ctx context.Context, functionDesc *functionDesc) error {
 	for i := range functionDesc.Arguments {
 		argumentDesc := &functionDesc.Arguments[i]
 		if argumentDesc.Result == nil {
@@ -103,6 +101,7 @@ func callFunction(ctx context.Context, functionDesc *functionDesc) error {
 	if err := functionDesc.Body(ctx); err != nil {
 		return fmt.Errorf("di: function failed; tag=%q: %w", functionDesc.Tag, err)
 	}
+	p.calledFunctionCount++
 	return nil
 }
 
@@ -129,8 +128,8 @@ func checkCallbacks(functionDesc *functionDesc) error {
 }
 
 func (p *Program) doCallbacks(ctx context.Context, functionDesc *functionDesc) error {
-	for j := range functionDesc.Results {
-		resultDesc := &functionDesc.Results[j]
+	for i := range functionDesc.Results {
+		resultDesc := &functionDesc.Results[i]
 		for _, hookDesc := range resultDesc.Hooks {
 			hookDesc.InValue.Set(resultDesc.OutValue)
 			if err := (*hookDesc.CallbackPtr)(ctx); err != nil {
@@ -145,18 +144,18 @@ func (p *Program) doCallbacks(ctx context.Context, functionDesc *functionDesc) e
 
 // Clean does cleanups associated with Results.
 func (p *Program) Clean() {
-	p.doCleanups(len(p.orderedFunctionDescIndexes))
-}
-
-func (p *Program) doCleanups(n int) {
-	for i := n - 1; i >= 0; i-- {
+	for i := p.calledFunctionCount - 1; i >= 0; i-- {
 		functionDescIndex := p.orderedFunctionDescIndexes[i]
 		functionDesc := &p.functionDescs[functionDescIndex]
-		for j := range functionDesc.Results {
-			resultDesc := &functionDesc.Results[j]
-			if resultDesc.CleanupPtr != nil && *resultDesc.CleanupPtr != nil {
-				(*resultDesc.CleanupPtr)()
-			}
+		doCleanups(functionDesc)
+	}
+}
+
+func doCleanups(functionDesc *functionDesc) {
+	for i := len(functionDesc.Results) - 1; i >= 0; i-- {
+		resultDesc := &functionDesc.Results[i]
+		if resultDesc.CleanupPtr != nil && *resultDesc.CleanupPtr != nil {
+			(*resultDesc.CleanupPtr)()
 		}
 	}
 }
