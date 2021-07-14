@@ -16,6 +16,8 @@ func Example() {
 	p.MustAddFunction(Baz())
 	p.MustAddFunction(Foo())
 	p.MustAddFunction(Bar())
+	// NOTE: The order that adds these Functions into the Program is insignificant, the
+	//       Program will rearrange these Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// create temp dir

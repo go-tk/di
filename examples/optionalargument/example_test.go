@@ -12,6 +12,8 @@ func Example() {
 	defer p.Clean()
 	p.MustAddFunction(Bar())
 	p.MustAddFunction(Foo())
+	// NOTE: The order that adds these Functions into the Program is insignificant, the
+	//       Program will rearrange these Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// y - x = 99
