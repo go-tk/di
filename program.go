@@ -71,8 +71,7 @@ func (p *Program) resolve() error {
 }
 
 func (p *Program) callFunctions(ctx context.Context) error {
-	for i := range p.orderedFunctionDescIndexes {
-		functionDescIndex := p.orderedFunctionDescIndexes[i]
+	for _, functionDescIndex := range p.orderedFunctionDescIndexes {
 		functionDesc := &p.functionDescs[functionDescIndex]
 		if err := p.callFunction(ctx, functionDesc); err != nil {
 			return err
