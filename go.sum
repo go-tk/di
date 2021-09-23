@@ -1,9 +1,7 @@
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/go-tk/testcase v0.5.2 h1:N6V/2b67bgQaCC3SB8FGpO0Zmdoaqz9xw+NGpgdXAd0=
-github.com/go-tk/testcase v0.5.2/go.mod h1:70s7MsM3r38BYfzntn8spYX2EvYBdoJkBUY/lVCjZz8=
-github.com/go-tk/testcase v0.5.3 h1:d8kLx3xX2jV+E4VyCW7z3vtZtfZjEeYjQ3slIAMBTA0=
-github.com/go-tk/testcase v0.5.3/go.mod h1:70s7MsM3r38BYfzntn8spYX2EvYBdoJkBUY/lVCjZz8=
+github.com/go-tk/testcase v0.5.4 h1:NPTIoTLVs0XN4oX9gEyZnwUHI8v1V+qKD0XFWD1iFTU=
+github.com/go-tk/testcase v0.5.4/go.mod h1:70s7MsM3r38BYfzntn8spYX2EvYBdoJkBUY/lVCjZz8=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0 h1:4G4v2dO3VZwixGIRoQ5Lfboy6nUhCyYzaqnIAPPhYs4=

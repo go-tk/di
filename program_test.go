@@ -26,8 +26,8 @@ func TestProgram_AddFunction(t *testing.T) {
 		ExpectedOutput Output
 	}
 	tc := testcase.New().
-		AddTask(1000, func(w *Workspace) {}).
-		AddTask(2000, func(w *Workspace) {
+		AddTask(10, func(w *Workspace) {}).
+		AddTask(20, func(w *Workspace) {
 			err := w.P.AddFunction(w.Input.F)
 			var output Output
 			if err != nil {
@@ -42,7 +42,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("function with empty tag").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.ExpectedOutput.ErrStr = ErrInvalidFunction.Error() + ": empty tag"
 				w.ExpectedOutput.Err = ErrInvalidFunction
@@ -50,7 +50,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("function with nil body").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.ExpectedOutput.ErrStr = ErrInvalidFunction.Error() + ": nil body; tag=\"foo\""
 				w.ExpectedOutput.Err = ErrInvalidFunction
@@ -58,7 +58,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("argument with empty in-value id").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
@@ -69,7 +69,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("argument without in-value pointer").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Arguments = []Argument{{InValueID: "a1"}}
@@ -79,7 +79,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("argument with invalid in-value pointer type").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 string
@@ -90,7 +90,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("argument with nil in-value pointer").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Arguments = []Argument{{InValueID: "a1", InValuePtr: (*int)(nil)}}
@@ -100,7 +100,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("result with empty out-value id").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
@@ -111,7 +111,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("result without out-value pointer").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Results = []Result{{OutValueID: "r1"}}
@@ -121,7 +121,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("result with invalid out-value pointer type").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
@@ -132,7 +132,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("result with nil out-value pointer").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Results = []Result{{OutValueID: "r1", OutValuePtr: (*int)(nil)}}
@@ -142,7 +142,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook with empty in-value id").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
@@ -153,7 +153,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook without in-value pointer").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Hooks = []Hook{{InValueID: "r1"}}
@@ -163,7 +163,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook with invalid in-value pointer type").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
@@ -174,7 +174,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook with nil in-value pointer").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: (*int)(nil)}}
@@ -184,7 +184,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook with nil callback pointer").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 *int
@@ -194,7 +194,7 @@ func TestProgram_AddFunction(t *testing.T) {
 			}),
 		tc.Copy().
 			Then("should succeed").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 *int
@@ -230,10 +230,10 @@ func TestProgram_Run(t *testing.T) {
 		ExpectedOutput Output
 	}
 	tc := testcase.New().
-		AddTask(1000, func(w *Workspace) {
+		AddTask(10, func(w *Workspace) {
 			w.Input.Ctx = context.Background()
 		}).
-		AddTask(2000, func(w *Workspace) {
+		AddTask(20, func(w *Workspace) {
 			err := w.P.Run(w.Input.Ctx)
 			var output Output
 			if err != nil {
@@ -248,7 +248,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("results with identical out-value ids").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				var var1 int
 				var var2 int
 				w.P.MustAddFunction(Function{
@@ -271,7 +271,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value of argument not found by id").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -299,7 +299,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value of optional argument not found by id").
 			Then("should not fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -325,7 +325,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value type of argument and out-value type of result not matched").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -352,7 +352,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value of hook not found by id").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -381,7 +381,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value type of hook and out-value type of result not matched").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -409,7 +409,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("circular dependencies (1)").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				var x int
 				w.P.MustAddFunction(Function{
 					Tag: "foo",
@@ -428,7 +428,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("circular dependencies (2)").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				var x int
 				cb := func(context.Context) error { return nil }
 				w.P.MustAddFunction(Function{
@@ -448,7 +448,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("circular dependencies (3)").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x, y int
 					w.P.MustAddFunction(Function{
@@ -482,7 +482,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("circular dependencies (4)").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -514,7 +514,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("function body returning error").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				w.P.MustAddFunction(Function{
 					Tag:  "foo",
 					Body: func(context.Context) error { return context.DeadlineExceeded },
@@ -525,7 +525,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("function body not provisioning cleanup").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				var x int
 				var c func()
 				w.P.MustAddFunction(Function{
@@ -541,7 +541,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("function body not provisioning callback").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -569,7 +569,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("function body provisioning callback returning error").
 			Then("should fail").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -601,7 +601,7 @@ func TestProgram_Run(t *testing.T) {
 			}),
 		tc.Copy().
 			Then("should succeed").
-			AddTask(1999, func(w *Workspace) {
+			AddTask(19, func(w *Workspace) {
 				var s string
 				w.AddCleanup(func() {
 					if !w.T().Failed() {
@@ -699,14 +699,14 @@ func TestProgram_Clean(t *testing.T) {
 		P Program
 	}
 	tc := testcase.New().
-		AddTask(1000, func(w *Workspace) {
+		AddTask(10, func(w *Workspace) {
 			w.P.Clean()
 		})
 	testcase.RunListParallel(t,
 		tc.Copy().
 			Given("successful Program.Run() and cleanups provisioned").
 			Then("should do cleanups").
-			AddTask(999, func(w *Workspace) {
+			AddTask(9, func(w *Workspace) {
 				var s string
 				w.AddCleanup(func() {
 					if !w.T().Failed() {
@@ -755,7 +755,7 @@ func TestProgram_Clean(t *testing.T) {
 		tc.Copy().
 			Given("failing Program.Run() and cleanups provisioned").
 			Then("should do cleanups").
-			AddTask(999, func(w *Workspace) {
+			AddTask(9, func(w *Workspace) {
 				var s string
 				w.AddCleanup(func() {
 					if !w.T().Failed() {
@@ -785,7 +785,7 @@ func TestProgram_Clean(t *testing.T) {
 		tc.Copy().
 			Given("cleanups not yet provisioned").
 			Then("should not do cleanups").
-			AddTask(999, func(w *Workspace) {
+			AddTask(9, func(w *Workspace) {
 				var s string
 				w.AddCleanup(func() {
 					if !w.T().Failed() {
