@@ -1,0 +1,24 @@
+defaults:
+  run:
+    shell: bash
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: >-
+        ./make
+        POST_GENERATE='git diff --exit-code'
+        POST_FMT='git diff --exit-code'
+        POST_FMTMOD='git diff --exit-code'
+        TEST_FLAGS='-race -coverprofile=coverage.txt'
+    - uses: codecov/codecov-action@v2
+      with:
+        files: coverage.txt
