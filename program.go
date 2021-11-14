@@ -76,10 +76,10 @@ func (p *Program) callFunctions(ctx context.Context) error {
 		if err := p.callFunction(ctx, functionDesc); err != nil {
 			return err
 		}
-		if err := checkCleanups(functionDesc); err != nil {
+		if err := checkCallbacks(functionDesc); err != nil {
 			return err
 		}
-		if err := checkCallbacks(functionDesc); err != nil {
+		if err := checkCleanup(functionDesc); err != nil {
 			return err
 		}
 		if err := p.doCallbacks(ctx, functionDesc); err != nil {
@@ -97,20 +97,10 @@ func (p *Program) callFunction(ctx context.Context, functionDesc *functionDesc) 
 		}
 		argumentDesc.InValue.Set(argumentDesc.Result.OutValue)
 	}
-	if err := functionDesc.Body(ctx); err != nil {
-		return fmt.Errorf("di: function failed; tag=%q: %w", functionDesc.Tag, err)
-	}
+	err := functionDesc.Body(ctx)
 	p.calledFunctionCount++
-	return nil
-}
-
-func checkCleanups(functionDesc *functionDesc) error {
-	for i := range functionDesc.Results {
-		resultDesc := &functionDesc.Results[i]
-		if resultDesc.CleanupPtr != nil && *resultDesc.CleanupPtr == nil {
-			return fmt.Errorf("%w; tag=%q outValueID=%q",
-				ErrNilCleanup, functionDesc.Tag, resultDesc.OutValueID)
-		}
+	if err != nil {
+		return fmt.Errorf("di: function failed; tag=%q: %w", functionDesc.Tag, err)
 	}
 	return nil
 }
@@ -122,6 +112,13 @@ func checkCallbacks(functionDesc *functionDesc) error {
 			return fmt.Errorf("%w; tag=%q inValueID=%q",
 				ErrNilCallback, functionDesc.Tag, hookDesc.InValueID)
 		}
+	}
+	return nil
+}
+
+func checkCleanup(functionDesc *functionDesc) error {
+	if cleanupPtr := functionDesc.CleanupPtr; cleanupPtr != nil && *cleanupPtr == nil {
+		return fmt.Errorf("%w; tag=%q", ErrNilCleanup, functionDesc.Tag)
 	}
 	return nil
 }
@@ -146,26 +143,24 @@ func (p *Program) Clean() {
 	for i := p.calledFunctionCount - 1; i >= 0; i-- {
 		functionDescIndex := p.orderedFunctionDescIndexes[i]
 		functionDesc := &p.functionDescs[functionDescIndex]
-		doCleanups(functionDesc)
+		doCleanup(functionDesc)
 	}
 }
 
-func doCleanups(functionDesc *functionDesc) {
-	for i := len(functionDesc.Results) - 1; i >= 0; i-- {
-		resultDesc := &functionDesc.Results[i]
-		if resultDesc.CleanupPtr != nil && *resultDesc.CleanupPtr != nil {
-			(*resultDesc.CleanupPtr)()
-		}
+func doCleanup(functionDesc *functionDesc) {
+	if cleanupPtr := functionDesc.CleanupPtr; cleanupPtr != nil && *cleanupPtr != nil {
+		(*cleanupPtr)()
 	}
 }
 
 type functionDesc struct {
-	Tag       string
-	Arguments []argumentDesc
-	Results   []resultDesc
-	Hooks     []hookDesc
-	Body      func(context.Context) error
-	Index     int
+	Tag        string
+	Arguments  []argumentDesc
+	Results    []resultDesc
+	Hooks      []hookDesc
+	CleanupPtr *func()
+	Body       func(context.Context) error
+	Index      int
 }
 
 type argumentDesc struct {
@@ -178,7 +173,6 @@ type argumentDesc struct {
 type resultDesc struct {
 	OutValueID    string
 	OutValue      reflect.Value
-	CleanupPtr    *func()
 	FunctionIndex int
 	Hooks         []*hookDesc
 }
@@ -191,11 +185,11 @@ type hookDesc struct {
 }
 
 var (
-	// ErrNilCleanup is return by Program.Run() when the cleanup pointed by CleanupPtr
-	// is nil after the Function body is executed.
-	ErrNilCleanup = errors.New("di: nil cleanup")
-
 	// ErrNilCallback is return by Program.Run() when the callback pointed by CallbackPtr
 	// is nil after the Function body is executed.
 	ErrNilCallback = errors.New("di: nil callback")
+
+	// ErrNilCleanup is return by Program.Run() when the cleanup pointed by CleanupPtr
+	// is nil after the Function body is executed.
+	ErrNilCleanup = errors.New("di: nil cleanup")
 )

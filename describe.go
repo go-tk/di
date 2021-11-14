@@ -23,11 +23,12 @@ func describeFunction(function *Function) (functionDesc, error) {
 		return functionDesc{}, err
 	}
 	return functionDesc{
-		Tag:       function.Tag,
-		Arguments: argumentDescs,
-		Results:   resultDescs,
-		Hooks:     hookDescs,
-		Body:      function.Body,
+		Tag:        function.Tag,
+		Arguments:  argumentDescs,
+		Results:    resultDescs,
+		Hooks:      hookDescs,
+		CleanupPtr: function.CleanupPtr,
+		Body:       function.Body,
 	}, nil
 }
 
@@ -86,7 +87,6 @@ func describeResults(results []Result, tag string) ([]resultDesc, error) {
 		resultDesc := &resultDescs[i]
 		resultDesc.OutValueID = result.OutValueID
 		resultDesc.OutValue = reflect.ValueOf(result.OutValuePtr).Elem()
-		resultDesc.CleanupPtr = result.CleanupPtr
 	}
 	return resultDescs, nil
 }

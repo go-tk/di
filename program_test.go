@@ -531,11 +531,12 @@ func TestProgram_Run(t *testing.T) {
 				w.P.MustAddFunction(Function{
 					Tag: "foo",
 					Results: []Result{
-						{OutValueID: "x", OutValuePtr: &x, CleanupPtr: &c},
+						{OutValueID: "x", OutValuePtr: &x},
 					},
-					Body: func(context.Context) error { return nil },
+					CleanupPtr: &c,
+					Body:       func(context.Context) error { return nil },
 				})
-				w.ExpectedOutput.ErrStr = ErrNilCleanup.Error() + "; tag=\"foo\" outValueID=\"x\""
+				w.ExpectedOutput.ErrStr = ErrNilCleanup.Error() + "; tag=\"foo\""
 				w.ExpectedOutput.Err = ErrNilCleanup
 			}),
 		tc.Copy().
@@ -710,37 +711,33 @@ func TestProgram_Clean(t *testing.T) {
 				var s string
 				w.AddCleanup(func() {
 					if !w.T().Failed() {
-						assert.Equal(w.T(), "123", s)
+						assert.Equal(w.T(), "12", s)
 					}
 				})
 				{
-					var x, y int
-					var c1, c2 func()
+					var x int
+					var c func()
 					w.P.MustAddFunction(Function{
 						Tag: "foo",
 						Results: []Result{
-							{OutValueID: "x", OutValuePtr: &x, CleanupPtr: &c1},
-							{OutValueID: "y", OutValuePtr: &y, CleanupPtr: &c2},
+							{OutValueID: "x", OutValuePtr: &x},
 						},
+						CleanupPtr: &c,
 						Body: func(context.Context) error {
-							c1 = func() { s += "3" }
-							c2 = func() { s += "2" }
+							c = func() { s += "2" }
 							return nil
 						},
 					})
 				}
 				{
-					var x, y, z int
+					var x int
 					var c func()
 					w.P.MustAddFunction(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
-							{InValueID: "y", InValuePtr: &y},
 						},
-						Results: []Result{
-							{OutValueID: "z", OutValuePtr: &z, CleanupPtr: &c},
-						},
+						CleanupPtr: &c,
 						Body: func(context.Context) error {
 							c = func() { s += "1" }
 							return nil
@@ -753,7 +750,7 @@ func TestProgram_Clean(t *testing.T) {
 				}
 			}),
 		tc.Copy().
-			Given("failing Program.Run() and cleanups provisioned").
+			Given("failed Program.Run() and cleanups provisioned").
 			Then("should do cleanups").
 			AddTask(9, func(w *Workspace) {
 				var s string
@@ -762,23 +759,38 @@ func TestProgram_Clean(t *testing.T) {
 						assert.Equal(w.T(), "12", s)
 					}
 				})
-				var x, y, z int
-				var c1, c2, c3 func()
-				w.P.MustAddFunction(Function{
-					Tag: "foo",
-					Results: []Result{
-						{OutValueID: "x", OutValuePtr: &x, CleanupPtr: &c1},
-						{OutValueID: "y", OutValuePtr: &y, CleanupPtr: &c2},
-						{OutValueID: "z", OutValuePtr: &z, CleanupPtr: &c3},
-					},
-					Body: func(context.Context) error {
-						c1 = func() { s += "2" }
-						c2 = func() { s += "1" }
-						return nil
-					},
-				})
+				{
+					var x int
+					var c func()
+					w.P.MustAddFunction(Function{
+						Tag: "foo",
+						Results: []Result{
+							{OutValueID: "x", OutValuePtr: &x},
+						},
+						CleanupPtr: &c,
+						Body: func(context.Context) error {
+							c = func() { s += "2" }
+							return nil
+						},
+					})
+				}
+				{
+					var x int
+					var c func()
+					w.P.MustAddFunction(Function{
+						Tag: "bar",
+						Arguments: []Argument{
+							{InValueID: "x", InValuePtr: &x},
+						},
+						CleanupPtr: &c,
+						Body: func(context.Context) error {
+							c = func() { s += "1" }
+							return context.DeadlineExceeded
+						},
+					})
+				}
 				err := w.P.Run(context.Background())
-				if !assert.ErrorIs(w.T(), err, ErrNilCleanup) {
+				if !assert.ErrorIs(w.T(), err, context.DeadlineExceeded) {
 					w.T().FailNow()
 				}
 			}),
@@ -792,22 +804,36 @@ func TestProgram_Clean(t *testing.T) {
 						assert.Equal(w.T(), "", s)
 					}
 				})
-				var x, y, z int
-				var c1, c2, c3 func()
-				w.P.MustAddFunction(Function{
-					Tag: "foo",
-					Results: []Result{
-						{OutValueID: "x", OutValuePtr: &x, CleanupPtr: &c1},
-						{OutValueID: "y", OutValuePtr: &y, CleanupPtr: &c2},
-						{OutValueID: "z", OutValuePtr: &z, CleanupPtr: &c3},
-					},
-					Body: func(context.Context) error {
-						c1 = func() { s += "3" }
-						c2 = func() { s += "2" }
-						c3 = func() { s += "1" }
-						return nil
-					},
-				})
+				{
+					var x int
+					var c func()
+					w.P.MustAddFunction(Function{
+						Tag: "foo",
+						Results: []Result{
+							{OutValueID: "x", OutValuePtr: &x},
+						},
+						CleanupPtr: &c,
+						Body: func(context.Context) error {
+							c = func() { s += "2" }
+							return nil
+						},
+					})
+				}
+				{
+					var x int
+					var c func()
+					w.P.MustAddFunction(Function{
+						Tag: "bar",
+						Arguments: []Argument{
+							{InValueID: "x", InValuePtr: &x},
+						},
+						CleanupPtr: &c,
+						Body: func(context.Context) error {
+							c = func() { s += "1" }
+							return nil
+						},
+					})
+				}
 			}),
 	)
 }
