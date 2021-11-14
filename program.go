@@ -138,7 +138,7 @@ func (p *Program) doCallbacks(ctx context.Context, functionDesc *functionDesc) e
 	return nil
 }
 
-// Clean does cleanups associated with Results.
+// Clean does cleanups associated with Functions.
 func (p *Program) Clean() {
 	for i := p.calledFunctionCount - 1; i >= 0; i-- {
 		functionDescIndex := p.orderedFunctionDescIndexes[i]

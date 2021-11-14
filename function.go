@@ -5,7 +5,8 @@ import "context"
 // Function represents the container that describes the specification for dependency injection.
 // Tag serves as additional information to locate the Function for debugging purposes.
 // Body will be called alone with Program.Run().
-// Cleanup is optional and will be called along with Program.Clean().
+// Cleanup is optional and will be called along with Program.Clean(). Note that the order in
+// which cleanups are called is reverse to the order in which bodies are called.
 // If CleanupPtr is not nil, Body should provision the cleanup.
 type Function struct {
 	Tag        string
