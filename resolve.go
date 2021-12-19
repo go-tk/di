@@ -73,7 +73,7 @@ func (r *resolution12) processArgumentDesc(argumentDesc *argumentDesc, functionD
 	outValueType := resultDesc.OutValue.Type()
 	if inValueType != outValueType {
 		tag := r.FunctionDescs[resultDesc.FunctionIndex].Tag
-		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q inValueType=%v outValueType=%v",
+		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q inValueType=%q outValueType=%q",
 			ErrValueTypeMismatch, functionDesc.Tag, tag, argumentDesc.InValueID,
 			inValueType, outValueType)
 	}
@@ -91,7 +91,7 @@ func (r *resolution12) processHookDesc(hookDesc *hookDesc, functionDesc *functio
 	outValueType := resultDesc.OutValue.Type()
 	if inValueType != outValueType {
 		tag := r.FunctionDescs[resultDesc.FunctionIndex].Tag
-		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q inValueType=%v outValueType=%v",
+		return fmt.Errorf("%w; tag1=%q tag2=%q valueID=%q inValueType=%q outValueType=%q",
 			ErrValueTypeMismatch, functionDesc.Tag, tag, hookDesc.InValueID,
 			inValueType, outValueType)
 	}

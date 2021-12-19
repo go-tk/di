@@ -84,7 +84,7 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 string
 				w.Input.F.Arguments = []Argument{{InValueID: "a1", InValuePtr: a1}}
-				w.ExpectedOutput.ErrStr = ErrInvalidArgument.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"a1\" inValuePtrType=string"
+				w.ExpectedOutput.ErrStr = ErrInvalidArgument.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"a1\" inValuePtrType=\"string\""
 				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
@@ -126,7 +126,7 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
 				w.Input.F.Results = []Result{{OutValueID: "r1", OutValuePtr: r1}}
-				w.ExpectedOutput.ErrStr = ErrInvalidResult.Error() + ": invalid out-value pointer type; tag=\"foo\" outValueID=\"r1\" outValuePtrType=string"
+				w.ExpectedOutput.ErrStr = ErrInvalidResult.Error() + ": invalid out-value pointer type; tag=\"foo\" outValueID=\"r1\" outValuePtrType=\"string\""
 				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
@@ -168,7 +168,7 @@ func TestProgram_AddFunction(t *testing.T) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
 				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: r1}}
-				w.ExpectedOutput.ErrStr = ErrInvalidHook.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"r1\" inValuePtrType=string"
+				w.ExpectedOutput.ErrStr = ErrInvalidHook.Error() + ": invalid in-value pointer type; tag=\"foo\" inValueID=\"r1\" inValuePtrType=\"string\""
 				w.ExpectedOutput.Err = ErrInvalidFunction
 			}),
 		tc.Copy().
@@ -346,7 +346,7 @@ func TestProgram_Run(t *testing.T) {
 						Body: func(context.Context) error { return nil },
 					})
 				}
-				w.ExpectedOutput.ErrStr = ErrValueTypeMismatch.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=string outValueType=int"
+				w.ExpectedOutput.ErrStr = ErrValueTypeMismatch.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=\"string\" outValueType=\"int\""
 				w.ExpectedOutput.Err = ErrValueTypeMismatch
 			}),
 		tc.Copy().
@@ -404,7 +404,7 @@ func TestProgram_Run(t *testing.T) {
 					})
 				}
 				w.ExpectedOutput.Err = ErrValueTypeMismatch
-				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=string outValueType=int"
+				w.ExpectedOutput.ErrStr = w.ExpectedOutput.Err.Error() + "; tag1=\"bar\" tag2=\"foo\" valueID=\"x\" inValueType=\"string\" outValueType=\"int\""
 			}),
 		tc.Copy().
 			Given("circular dependencies (1)").

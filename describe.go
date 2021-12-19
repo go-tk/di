@@ -67,8 +67,8 @@ func validateArgument(argument *Argument, tag string) error {
 	}
 	inValuePtr := reflect.ValueOf(argument.InValuePtr)
 	if inValuePtr.Kind() != reflect.Ptr {
-		return fmt.Errorf("%w: invalid in-value pointer type; tag=%q inValueID=%q inValuePtrType=%T",
-			errInvalidArgument, tag, argument.InValueID, argument.InValuePtr)
+		return fmt.Errorf("%w: invalid in-value pointer type; tag=%q inValueID=%q inValuePtrType=%q",
+			errInvalidArgument, tag, argument.InValueID, reflect.TypeOf(argument.InValuePtr))
 	}
 	if inValuePtr.IsNil() {
 		return fmt.Errorf("%w: nil in-value pointer; tag=%q inValueID=%q",
@@ -101,8 +101,8 @@ func validateResult(result *Result, tag string) error {
 	}
 	outValuePtr := reflect.ValueOf(result.OutValuePtr)
 	if outValuePtr.Kind() != reflect.Ptr {
-		return fmt.Errorf("%w: invalid out-value pointer type; tag=%q outValueID=%q outValuePtrType=%T",
-			errInvalidResult, tag, result.OutValueID, result.OutValuePtr)
+		return fmt.Errorf("%w: invalid out-value pointer type; tag=%q outValueID=%q outValuePtrType=%q",
+			errInvalidResult, tag, result.OutValueID, reflect.TypeOf(result.OutValuePtr))
 	}
 	if outValuePtr.IsNil() {
 		return fmt.Errorf("%w: nil out-value pointer; tag=%q outValueID=%q",
@@ -136,8 +136,8 @@ func validateHook(hook *Hook, tag string) error {
 	}
 	inValuePtr := reflect.ValueOf(hook.InValuePtr)
 	if inValuePtr.Kind() != reflect.Ptr {
-		return fmt.Errorf("%w: invalid in-value pointer type; tag=%q inValueID=%q inValuePtrType=%T",
-			errInvalidHook, tag, hook.InValueID, hook.InValuePtr)
+		return fmt.Errorf("%w: invalid in-value pointer type; tag=%q inValueID=%q inValuePtrType=%q",
+			errInvalidHook, tag, hook.InValueID, reflect.TypeOf(hook.InValuePtr))
 	}
 	if inValuePtr.IsNil() {
 		return fmt.Errorf("%w: nil in-value pointer; tag=%q inValueID=%q",
