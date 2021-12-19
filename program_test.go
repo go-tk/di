@@ -19,15 +19,13 @@ func TestProgram_AddFunction(t *testing.T) {
 		Err    error
 	}
 	type Workspace struct {
-		testcase.WorkspaceBase
-
 		P              Program
 		Input          Input
 		ExpectedOutput Output
 	}
 	tc := testcase.New().
-		AddTask(10, func(w *Workspace) {}).
-		AddTask(20, func(w *Workspace) {
+		Step(1, func(t *testing.T, w *Workspace) {}).
+		Step(2, func(t *testing.T, w *Workspace) {
 			err := w.P.AddFunction(w.Input.F)
 			var output Output
 			if err != nil {
@@ -36,13 +34,13 @@ func TestProgram_AddFunction(t *testing.T) {
 				}
 				output.Err = err
 			}
-			assert.Equal(w.T(), w.ExpectedOutput, output)
+			assert.Equal(t, w.ExpectedOutput, output)
 		})
 	testcase.RunListParallel(t,
 		tc.Copy().
 			Given("function with empty tag").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.ExpectedOutput.ErrStr = ErrInvalidFunction.Error() + ": empty tag"
 				w.ExpectedOutput.Err = ErrInvalidFunction
@@ -50,7 +48,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("function with nil body").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.ExpectedOutput.ErrStr = ErrInvalidFunction.Error() + ": nil body; tag=\"foo\""
 				w.ExpectedOutput.Err = ErrInvalidFunction
@@ -58,7 +56,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("argument with empty in-value id").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
@@ -69,7 +67,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("argument without in-value pointer").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Arguments = []Argument{{InValueID: "a1"}}
@@ -79,7 +77,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("argument with invalid in-value pointer type").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 string
@@ -90,7 +88,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("argument with nil in-value pointer").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Arguments = []Argument{{InValueID: "a1", InValuePtr: (*int)(nil)}}
@@ -100,7 +98,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("result with empty out-value id").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
@@ -111,7 +109,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("result without out-value pointer").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Results = []Result{{OutValueID: "r1"}}
@@ -121,7 +119,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("result with invalid out-value pointer type").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
@@ -132,7 +130,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("result with nil out-value pointer").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Results = []Result{{OutValueID: "r1", OutValuePtr: (*int)(nil)}}
@@ -142,7 +140,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook with empty in-value id").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 int
@@ -153,7 +151,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook without in-value pointer").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Hooks = []Hook{{InValueID: "r1"}}
@@ -163,7 +161,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook with invalid in-value pointer type").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 string
@@ -174,7 +172,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook with nil in-value pointer").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				w.Input.F.Hooks = []Hook{{InValueID: "r1", InValuePtr: (*int)(nil)}}
@@ -184,7 +182,7 @@ func TestProgram_AddFunction(t *testing.T) {
 		tc.Copy().
 			Given("hook with nil callback pointer").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var r1 *int
@@ -194,7 +192,7 @@ func TestProgram_AddFunction(t *testing.T) {
 			}),
 		tc.Copy().
 			Then("should succeed").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.Input.F.Tag = "foo"
 				w.Input.F.Body = func(context.Context) error { return nil }
 				var a1 *int
@@ -223,17 +221,15 @@ func TestProgram_Run(t *testing.T) {
 		Err    error
 	}
 	type Workspace struct {
-		testcase.WorkspaceBase
-
 		P              Program
 		Input          Input
 		ExpectedOutput Output
 	}
 	tc := testcase.New().
-		AddTask(10, func(w *Workspace) {
+		Step(1, func(t *testing.T, w *Workspace) {
 			w.Input.Ctx = context.Background()
 		}).
-		AddTask(20, func(w *Workspace) {
+		Step(2, func(t *testing.T, w *Workspace) {
 			err := w.P.Run(w.Input.Ctx)
 			var output Output
 			if err != nil {
@@ -242,13 +238,13 @@ func TestProgram_Run(t *testing.T) {
 				}
 				output.Err = err
 			}
-			assert.Equal(w.T(), w.ExpectedOutput, output)
+			assert.Equal(t, w.ExpectedOutput, output)
 		})
 	testcase.RunListParallel(t,
 		tc.Copy().
 			Given("results with identical out-value ids").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				var var1 int
 				var var2 int
 				w.P.MustAddFunction(Function{
@@ -271,7 +267,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value of argument not found by id").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -299,7 +295,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value of optional argument not found by id").
 			Then("should not fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -325,7 +321,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value type of argument and out-value type of result not matched").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -352,7 +348,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value of hook not found by id").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -381,7 +377,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("in-value type of hook and out-value type of result not matched").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -409,7 +405,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("circular dependencies (1)").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				var x int
 				w.P.MustAddFunction(Function{
 					Tag: "foo",
@@ -428,7 +424,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("circular dependencies (2)").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				var x int
 				cb := func(context.Context) error { return nil }
 				w.P.MustAddFunction(Function{
@@ -448,7 +444,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("circular dependencies (3)").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x, y int
 					w.P.MustAddFunction(Function{
@@ -482,7 +478,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("circular dependencies (4)").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -514,7 +510,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("function body returning error").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				w.P.MustAddFunction(Function{
 					Tag:  "foo",
 					Body: func(context.Context) error { return context.DeadlineExceeded },
@@ -525,7 +521,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("function body not provisioning cleanup").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				var x int
 				var c func()
 				w.P.MustAddFunction(Function{
@@ -542,7 +538,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("function body not provisioning callback").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -570,7 +566,7 @@ func TestProgram_Run(t *testing.T) {
 		tc.Copy().
 			Given("function body provisioning callback returning error").
 			Then("should fail").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
 					w.P.MustAddFunction(Function{
@@ -602,11 +598,11 @@ func TestProgram_Run(t *testing.T) {
 			}),
 		tc.Copy().
 			Then("should succeed").
-			AddTask(19, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				var s string
-				w.AddCleanup(func() {
-					if !w.T().Failed() {
-						assert.Equal(w.T(), "12345", s)
+				t.Cleanup(func() {
+					if !t.Failed() {
+						assert.Equal(t, "12345", s)
 					}
 				})
 				{
@@ -619,8 +615,8 @@ func TestProgram_Run(t *testing.T) {
 						},
 						Body: func(context.Context) error {
 							s += "5"
-							assert.Equal(w.T(), 101, x)
-							assert.Equal(w.T(), 404, y)
+							assert.Equal(t, 101, x)
+							assert.Equal(t, 404, y)
 							return nil
 						},
 					})
@@ -637,7 +633,7 @@ func TestProgram_Run(t *testing.T) {
 						},
 						Body: func(context.Context) error {
 							s += "3"
-							assert.Equal(w.T(), 101, x)
+							assert.Equal(t, 101, x)
 							y = 404
 							return nil
 						},
@@ -669,7 +665,7 @@ func TestProgram_Run(t *testing.T) {
 							s += "2"
 							cb = func(context.Context) error {
 								s += "4"
-								assert.Equal(w.T(), 404, y)
+								assert.Equal(t, 404, y)
 								return nil
 							}
 							return nil
@@ -695,23 +691,21 @@ func TestProgram_MustRun(t *testing.T) {
 
 func TestProgram_Clean(t *testing.T) {
 	type Workspace struct {
-		testcase.WorkspaceBase
-
 		P Program
 	}
 	tc := testcase.New().
-		AddTask(10, func(w *Workspace) {
+		Step(1, func(t *testing.T, w *Workspace) {
 			w.P.Clean()
 		})
 	testcase.RunListParallel(t,
 		tc.Copy().
 			Given("successful Program.Run() and cleanups provisioned").
 			Then("should do cleanups").
-			AddTask(9, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				var s string
-				w.AddCleanup(func() {
-					if !w.T().Failed() {
-						assert.Equal(w.T(), "12", s)
+				t.Cleanup(func() {
+					if !t.Failed() {
+						assert.Equal(t, "12", s)
 					}
 				})
 				{
@@ -745,18 +739,18 @@ func TestProgram_Clean(t *testing.T) {
 					})
 				}
 				err := w.P.Run(context.Background())
-				if !assert.NoError(w.T(), err) {
-					w.T().FailNow()
+				if !assert.NoError(t, err) {
+					t.FailNow()
 				}
 			}),
 		tc.Copy().
 			Given("failed Program.Run() and cleanups provisioned").
 			Then("should do cleanups").
-			AddTask(9, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				var s string
-				w.AddCleanup(func() {
-					if !w.T().Failed() {
-						assert.Equal(w.T(), "12", s)
+				t.Cleanup(func() {
+					if !t.Failed() {
+						assert.Equal(t, "12", s)
 					}
 				})
 				{
@@ -790,18 +784,18 @@ func TestProgram_Clean(t *testing.T) {
 					})
 				}
 				err := w.P.Run(context.Background())
-				if !assert.ErrorIs(w.T(), err, context.DeadlineExceeded) {
-					w.T().FailNow()
+				if !assert.ErrorIs(t, err, context.DeadlineExceeded) {
+					t.FailNow()
 				}
 			}),
 		tc.Copy().
 			Given("cleanups not yet provisioned").
 			Then("should not do cleanups").
-			AddTask(9, func(w *Workspace) {
+			Step(0.5, func(t *testing.T, w *Workspace) {
 				var s string
-				w.AddCleanup(func() {
-					if !w.T().Failed() {
-						assert.Equal(w.T(), "", s)
+				t.Cleanup(func() {
+					if !t.Failed() {
+						assert.Equal(t, "", s)
 					}
 				})
 				{
