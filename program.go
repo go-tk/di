@@ -28,7 +28,7 @@ func (p *Program) AddFunction(function Function) error {
 // MustAddFunction wraps AddFunction and panics when an error occurs.
 func (p *Program) MustAddFunction(function Function) {
 	if err := p.AddFunction(function); err != nil {
-		panic(err)
+		panic(fmt.Sprintf("add function: %v", err))
 	}
 }
 
@@ -46,7 +46,7 @@ func (p *Program) Run(ctx context.Context) error {
 // MustRun wraps Run and panics when an error occurs.
 func (p *Program) MustRun(ctx context.Context) {
 	if err := p.Run(ctx); err != nil {
-		panic(err)
+		panic(fmt.Sprintf("run program: %v", err))
 	}
 }
 
@@ -100,7 +100,7 @@ func (p *Program) callFunction(ctx context.Context, functionDesc *functionDesc) 
 	err := functionDesc.Body(ctx)
 	p.calledFunctionCount++
 	if err != nil {
-		return fmt.Errorf("di: function failed; tag=%q: %w", functionDesc.Tag, err)
+		return fmt.Errorf("call function; tag=%q: %w", functionDesc.Tag, err)
 	}
 	return nil
 }
@@ -130,7 +130,7 @@ func (p *Program) doCallbacks(ctx context.Context, functionDesc *functionDesc) e
 			hookDesc.InValue.Set(resultDesc.OutValue)
 			if err := (*hookDesc.CallbackPtr)(ctx); err != nil {
 				tag := p.functionDescs[hookDesc.FunctionIndex].Tag
-				return fmt.Errorf("di: callback failed; tag=%q inValueID=%q: %w",
+				return fmt.Errorf("do callback; tag=%q inValueID=%q: %w",
 					tag, hookDesc.InValueID, err)
 			}
 		}

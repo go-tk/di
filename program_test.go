@@ -513,7 +513,7 @@ func TestProgram_Run(t *testing.T) {
 					Tag:  "foo",
 					Body: func(context.Context) error { return context.DeadlineExceeded },
 				})
-				w.ExpOut.ErrStr = "di: function failed; tag=\"foo\": " + context.DeadlineExceeded.Error()
+				w.ExpOut.ErrStr = "call function; tag=\"foo\": " + context.DeadlineExceeded.Error()
 				w.ExpOut.Err = context.DeadlineExceeded
 			}),
 		tc.Copy().
@@ -591,7 +591,7 @@ func TestProgram_Run(t *testing.T) {
 						},
 					})
 				}
-				w.ExpOut.ErrStr = "di: callback failed; tag=\"bar\" inValueID=\"x\": " + context.DeadlineExceeded.Error()
+				w.ExpOut.ErrStr = "do callback; tag=\"bar\" inValueID=\"x\": " + context.DeadlineExceeded.Error()
 				w.ExpOut.Err = context.DeadlineExceeded
 			}),
 		tc.Copy().
