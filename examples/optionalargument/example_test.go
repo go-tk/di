@@ -9,9 +9,12 @@ import (
 
 func Example() {
 	var p di.Program
+	p.MustAddFunctions(
+		Bar(),
+		Foo(),
+		// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
+	)
 	defer p.Clean()
-	p.MustAddFunctions(Bar(), Foo())
-	// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// y - x = 99

@@ -9,9 +9,14 @@ import (
 
 func Example() {
 	var p di.Program
+	p.MustAddFunctions(
+		Foo(),
+		Baz(),
+		Qux(),
+		Bar(),
+		// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
+	)
 	defer p.Clean()
-	p.MustAddFunctions(Foo(), Baz(), Qux(), Bar())
-	// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// user name list: [tom jeff kim]

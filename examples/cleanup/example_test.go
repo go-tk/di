@@ -12,9 +12,13 @@ import (
 
 func Example() {
 	var p di.Program
+	p.MustAddFunctions(
+		Baz(),
+		Foo(),
+		Bar(),
+		// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
+	)
 	defer p.Clean()
-	p.MustAddFunctions(Baz(), Foo(), Bar())
-	// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// create temp dir
