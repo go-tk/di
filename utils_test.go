@@ -10,11 +10,3 @@ import (
 func TestFullFunctionName(t *testing.T) {
 	assert.Equal(t, "github.com/go-tk/di_test.TestFullFunctionName", FullFunctionName(TestFullFunctionName))
 }
-
-func TestPackagePath(t *testing.T) {
-	assert.Equal(t, "github.com/go-tk/di_test", PackagePath(0))
-}
-
-func TestPackageName(t *testing.T) {
-	assert.Equal(t, "di_test", PackageName(0))
-}

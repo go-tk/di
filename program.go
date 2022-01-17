@@ -14,9 +14,19 @@ type Program struct {
 	calledFunctionCount        int
 }
 
-// AddFunction adds a Function into the Program.
-func (p *Program) AddFunction(function Function) error {
-	functionDesc, err := describeFunction(&function)
+// AddFunctions adds functions into the Program.
+func (p *Program) AddFunctions(functions ...Function) error {
+	for i := range functions {
+		function := &functions[i]
+		if err := p.addFunction(function); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (p *Program) addFunction(function *Function) error {
+	functionDesc, err := describeFunction(function)
 	if err != nil {
 		return err
 	}
@@ -25,10 +35,10 @@ func (p *Program) AddFunction(function Function) error {
 	return nil
 }
 
-// MustAddFunction wraps AddFunction and panics when an error occurs.
-func (p *Program) MustAddFunction(function Function) {
-	if err := p.AddFunction(function); err != nil {
-		panic(fmt.Sprintf("add function: %v", err))
+// MustAddFunctions wraps AddFunctions and panics when an error occurs.
+func (p *Program) MustAddFunctions(functions ...Function) {
+	if err := p.AddFunctions(functions...); err != nil {
+		panic(fmt.Sprintf("add functions: %v", err))
 	}
 }
 

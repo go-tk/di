@@ -10,10 +10,8 @@ import (
 func Example() {
 	var p di.Program
 	defer p.Clean()
-	p.MustAddFunction(Bar())
-	p.MustAddFunction(Foo())
-	// NOTE: The order that adds these Functions into the Program is insignificant, the
-	//       Program will rearrange these Functions properly basing on dependency analysis.
+	p.MustAddFunctions(Bar(), Foo())
+	// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// y - x = 99
@@ -22,7 +20,7 @@ func Example() {
 func Foo() di.Function {
 	var y int
 	return di.Function{
-		Tag: "foo",
+		Tag: di.FullFunctionName(Foo),
 		Results: []di.Result{
 			{OutValueID: "y", OutValuePtr: &y},
 		},
@@ -37,7 +35,7 @@ func Bar() di.Function {
 	x := 100
 	var y int
 	return di.Function{
-		Tag: "bar",
+		Tag: di.FullFunctionName(Bar),
 		Arguments: []di.Argument{
 			{InValueID: "x", InValuePtr: &x, IsOptional: true},
 			{InValueID: "y", InValuePtr: &y},

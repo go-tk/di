@@ -10,12 +10,8 @@ import (
 func Example() {
 	var p di.Program
 	defer p.Clean()
-	p.MustAddFunction(Foo())
-	p.MustAddFunction(Baz())
-	p.MustAddFunction(Qux())
-	p.MustAddFunction(Bar())
-	// NOTE: The order that adds these Functions into the Program is insignificant, the
-	//       Program will rearrange these Functions properly basing on dependency analysis.
+	p.MustAddFunctions(Foo(), Baz(), Qux(), Bar())
+	// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// user name list: [tom jeff kim]
@@ -24,7 +20,7 @@ func Example() {
 func Foo() di.Function {
 	var userNameList *[]string
 	return di.Function{
-		Tag: "foo",
+		Tag: di.FullFunctionName(Foo),
 		Results: []di.Result{
 			{OutValueID: "user-name-list", OutValuePtr: &userNameList},
 		},
@@ -38,7 +34,7 @@ func Foo() di.Function {
 func Bar() di.Function {
 	var additionalUserName string
 	return di.Function{
-		Tag: "bar",
+		Tag: di.FullFunctionName(Bar),
 		Results: []di.Result{
 			{OutValueID: "additional-user-name", OutValuePtr: &additionalUserName},
 		},
@@ -52,7 +48,7 @@ func Bar() di.Function {
 func Baz() di.Function {
 	var userNameList *[]string
 	return di.Function{
-		Tag: "baz",
+		Tag: di.FullFunctionName(Baz),
 		Arguments: []di.Argument{
 			{InValueID: "user-name-list", InValuePtr: &userNameList},
 		},
@@ -68,7 +64,7 @@ func Qux() di.Function {
 	var userNameList *[]string
 	var callback func(_ context.Context) error
 	return di.Function{
-		Tag: "qux",
+		Tag: di.FullFunctionName(Qux),
 		Arguments: []di.Argument{
 			{InValueID: "additional-user-name", InValuePtr: &additionalUserName},
 		},

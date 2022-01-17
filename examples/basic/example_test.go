@@ -10,12 +10,8 @@ import (
 func Example() {
 	var p di.Program
 	defer p.Clean()
-	p.MustAddFunction(Bar())
-	p.MustAddFunction(Qux())
-	p.MustAddFunction(Baz())
-	p.MustAddFunction(Foo())
-	// NOTE: The order that adds these Functions into the Program is insignificant, the
-	//       Program will rearrange these Functions properly basing on dependency analysis.
+	p.MustAddFunctions(Bar(), Qux(), Baz(), Foo())
+	// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// x = 100
@@ -27,7 +23,7 @@ func Example() {
 func Foo() di.Function {
 	var x int
 	return di.Function{
-		Tag: "foo",
+		Tag: di.FullFunctionName(Foo),
 		Results: []di.Result{
 			{OutValueID: "x", OutValuePtr: &x},
 		},
@@ -43,7 +39,7 @@ func Bar() di.Function {
 	var x int
 	var y int
 	return di.Function{
-		Tag: "bar",
+		Tag: di.FullFunctionName(Bar),
 		Arguments: []di.Argument{
 			{InValueID: "x", InValuePtr: &x},
 		},
@@ -63,7 +59,7 @@ func Baz() di.Function {
 	var y int
 	var z int
 	return di.Function{
-		Tag: "baz",
+		Tag: di.FullFunctionName(Baz),
 		Arguments: []di.Argument{
 			{InValueID: "x", InValuePtr: &x},
 			{InValueID: "y", InValuePtr: &y},
@@ -84,7 +80,7 @@ func Qux() di.Function {
 	var y int
 	var z int
 	return di.Function{
-		Tag: "qux",
+		Tag: di.FullFunctionName(Qux),
 		Arguments: []di.Argument{
 			{InValueID: "x", InValuePtr: &x},
 			{InValueID: "y", InValuePtr: &y},

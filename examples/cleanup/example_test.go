@@ -13,11 +13,8 @@ import (
 func Example() {
 	var p di.Program
 	defer p.Clean()
-	p.MustAddFunction(Baz())
-	p.MustAddFunction(Foo())
-	p.MustAddFunction(Bar())
-	// NOTE: The order that adds these Functions into the Program is insignificant, the
-	//       Program will rearrange these Functions properly basing on dependency analysis.
+	p.MustAddFunctions(Baz(), Foo(), Bar())
+	// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
 	p.MustRun(context.Background())
 	// Output:
 	// create temp dir
@@ -31,7 +28,7 @@ func Foo() di.Function {
 	var tempDirName string
 	var cleanup func()
 	return di.Function{
-		Tag: "foo",
+		Tag: di.FullFunctionName(Foo),
 		Results: []di.Result{
 			{OutValueID: "temp-dir-name", OutValuePtr: &tempDirName},
 		},
@@ -57,7 +54,7 @@ func Bar() di.Function {
 	var tempFile *os.File
 	var cleanup func()
 	return di.Function{
-		Tag: "bar",
+		Tag: di.FullFunctionName(Bar),
 		Arguments: []di.Argument{
 			{InValueID: "temp-dir-name", InValuePtr: &tempDirName},
 		},
@@ -85,7 +82,7 @@ func Bar() di.Function {
 func Baz() di.Function {
 	var tempFile *os.File
 	return di.Function{
-		Tag: "baz",
+		Tag: di.FullFunctionName(Baz),
 		Arguments: []di.Argument{
 			{InValueID: "temp-file", InValuePtr: &tempFile},
 		},

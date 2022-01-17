@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestProgram_AddFunction(t *testing.T) {
+func TestProgram_AddFunctions(t *testing.T) {
 	type Workspace struct {
 		P  Program
 		In struct {
@@ -24,7 +24,7 @@ func TestProgram_AddFunction(t *testing.T) {
 	tc := testcase.New().
 		Step(1, func(t *testing.T, w *Workspace) {}).
 		Step(2, func(t *testing.T, w *Workspace) {
-			err := w.P.AddFunction(w.In.F)
+			err := w.P.AddFunctions(w.In.F)
 			if err != nil {
 				w.ActOut.ErrStr = err.Error()
 				for err2 := errors.Unwrap(err); err2 != nil; err, err2 = err2, errors.Unwrap(err2) {
@@ -204,10 +204,10 @@ func TestProgram_AddFunction(t *testing.T) {
 	)
 }
 
-func TestProgram_MustAddFunction(t *testing.T) {
+func TestProgram_MustAddFunctions(t *testing.T) {
 	assert.Panics(t, func() {
 		var p Program
-		p.MustAddFunction(Function{})
+		p.MustAddFunctions(Function{})
 	})
 }
 
@@ -245,20 +245,22 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				var var1 int
 				var var2 int
-				w.P.MustAddFunction(Function{
-					Tag: "foo",
-					Results: []Result{
-						{OutValueID: "var", OutValuePtr: &var1},
+				w.P.MustAddFunctions(
+					Function{
+						Tag: "foo",
+						Results: []Result{
+							{OutValueID: "var", OutValuePtr: &var1},
+						},
+						Body: func(context.Context) error { return nil },
 					},
-					Body: func(context.Context) error { return nil },
-				})
-				w.P.MustAddFunction(Function{
-					Tag: "bar",
-					Results: []Result{
-						{OutValueID: "var", OutValuePtr: &var2},
+					Function{
+						Tag: "bar",
+						Results: []Result{
+							{OutValueID: "var", OutValuePtr: &var2},
+						},
+						Body: func(context.Context) error { return nil },
 					},
-					Body: func(context.Context) error { return nil },
-				})
+				)
 				w.ExpOut.ErrStr = ErrValueAlreadyExists.Error() + "; tag1=\"bar\" tag2=\"foo\" outValueID=\"var\""
 				w.ExpOut.Err = ErrValueAlreadyExists
 			}),
@@ -268,7 +270,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -278,7 +280,7 @@ func TestProgram_Run(t *testing.T) {
 				}
 				{
 					var x, y int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -296,7 +298,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -306,7 +308,7 @@ func TestProgram_Run(t *testing.T) {
 				}
 				{
 					var x, y int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -322,7 +324,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -332,7 +334,7 @@ func TestProgram_Run(t *testing.T) {
 				}
 				{
 					var x string
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -349,7 +351,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -360,7 +362,7 @@ func TestProgram_Run(t *testing.T) {
 				{
 					var x, y int
 					cb := func(context.Context) error { return nil }
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Hooks: []Hook{
 							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
@@ -378,7 +380,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -389,7 +391,7 @@ func TestProgram_Run(t *testing.T) {
 				{
 					var x string
 					cb := func(context.Context) error { return nil }
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Hooks: []Hook{
 							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
@@ -405,7 +407,7 @@ func TestProgram_Run(t *testing.T) {
 			Then("should fail").
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				var x int
-				w.P.MustAddFunction(Function{
+				w.P.MustAddFunctions(Function{
 					Tag: "foo",
 					Arguments: []Argument{
 						{InValueID: "x", InValuePtr: &x},
@@ -425,7 +427,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				var x int
 				cb := func(context.Context) error { return nil }
-				w.P.MustAddFunction(Function{
+				w.P.MustAddFunctions(Function{
 					Tag: "foo",
 					Results: []Result{
 						{OutValueID: "x", OutValuePtr: &x},
@@ -445,7 +447,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x, y int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -458,7 +460,7 @@ func TestProgram_Run(t *testing.T) {
 				}
 				{
 					var x, y int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "y", InValuePtr: &y},
@@ -479,7 +481,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -490,7 +492,7 @@ func TestProgram_Run(t *testing.T) {
 				{
 					var x int
 					cb := func(context.Context) error { return nil }
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -509,7 +511,7 @@ func TestProgram_Run(t *testing.T) {
 			Given("function body returning error").
 			Then("should fail").
 			Step(0.5, func(t *testing.T, w *Workspace) {
-				w.P.MustAddFunction(Function{
+				w.P.MustAddFunctions(Function{
 					Tag:  "foo",
 					Body: func(context.Context) error { return context.DeadlineExceeded },
 				})
@@ -522,7 +524,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				var x int
 				var c func()
-				w.P.MustAddFunction(Function{
+				w.P.MustAddFunctions(Function{
 					Tag: "foo",
 					Results: []Result{
 						{OutValueID: "x", OutValuePtr: &x},
@@ -539,7 +541,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -550,7 +552,7 @@ func TestProgram_Run(t *testing.T) {
 				{
 					var x int
 					var cb func(context.Context) error
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Hooks: []Hook{
 							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
@@ -567,7 +569,7 @@ func TestProgram_Run(t *testing.T) {
 			Step(0.5, func(t *testing.T, w *Workspace) {
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -578,7 +580,7 @@ func TestProgram_Run(t *testing.T) {
 				{
 					var x int
 					var cb func(context.Context) error
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Hooks: []Hook{
 							{InValueID: "x", InValuePtr: &x, CallbackPtr: &cb},
@@ -605,7 +607,7 @@ func TestProgram_Run(t *testing.T) {
 				})
 				{
 					var x, y int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -621,7 +623,7 @@ func TestProgram_Run(t *testing.T) {
 				}
 				{
 					var x, y int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -639,7 +641,7 @@ func TestProgram_Run(t *testing.T) {
 				}
 				{
 					var x int
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "baz",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -654,7 +656,7 @@ func TestProgram_Run(t *testing.T) {
 				{
 					var y int
 					var cb func(context.Context) error
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "qux",
 						Hooks: []Hook{
 							{InValueID: "y", InValuePtr: &y, CallbackPtr: &cb},
@@ -677,7 +679,7 @@ func TestProgram_Run(t *testing.T) {
 func TestProgram_MustRun(t *testing.T) {
 	assert.Panics(t, func() {
 		var p Program
-		p.MustAddFunction(Function{
+		p.MustAddFunctions(Function{
 			Tag: "foo",
 			Body: func(context.Context) error {
 				return errors.New("")
@@ -709,7 +711,7 @@ func TestProgram_Clean(t *testing.T) {
 				{
 					var x int
 					var c func()
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -724,7 +726,7 @@ func TestProgram_Clean(t *testing.T) {
 				{
 					var x int
 					var c func()
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -754,7 +756,7 @@ func TestProgram_Clean(t *testing.T) {
 				{
 					var x int
 					var c func()
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -769,7 +771,7 @@ func TestProgram_Clean(t *testing.T) {
 				{
 					var x int
 					var c func()
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},
@@ -799,7 +801,7 @@ func TestProgram_Clean(t *testing.T) {
 				{
 					var x int
 					var c func()
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "foo",
 						Results: []Result{
 							{OutValueID: "x", OutValuePtr: &x},
@@ -814,7 +816,7 @@ func TestProgram_Clean(t *testing.T) {
 				{
 					var x int
 					var c func()
-					w.P.MustAddFunction(Function{
+					w.P.MustAddFunctions(Function{
 						Tag: "bar",
 						Arguments: []Argument{
 							{InValueID: "x", InValuePtr: &x},

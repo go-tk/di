@@ -151,7 +151,7 @@ func validateHook(hook *Hook, tag string) error {
 }
 
 var (
-	// ErrInvalidFunction is returned by Program.AddFunction() when the Function is invalid.
+	// ErrInvalidFunction is returned by Program.AddFunctions() when a Function is invalid.
 	ErrInvalidFunction = errors.New("di: invalid function")
 
 	errInvalidArgument = fmt.Errorf("%w: invalid augment", ErrInvalidFunction)
