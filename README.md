@@ -6,6 +6,10 @@
 
 Tiny dependency injection framework
 
+## Usage
+
+Looking into the examples is a easy way to get an idea of the functionality quickly.
+
 ## Examples
 
 - [Basic](examples/basic/example_test.go)
