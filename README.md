@@ -8,7 +8,7 @@ Tiny dependency injection framework
 
 ## Usage
 
-Looking into the examples is a easy way to get an idea of the functionality quickly.
+Looking into the examples is a easy way to get the idea of what is the functionality this library provides.
 
 ## Examples
 
