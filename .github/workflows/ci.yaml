@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: >-
         ./make
-        POST_GENERATE='git diff --exit-code'
+        POST_GEN='git diff --exit-code'
         POST_FMT='git diff --exit-code'
         POST_FMTMOD='git diff --exit-code'
         TEST_FLAGS='-race -coverprofile=coverage.txt'
