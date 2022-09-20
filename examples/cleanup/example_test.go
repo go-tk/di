@@ -11,89 +11,70 @@ import (
 )
 
 func Example() {
-	var p di.Program
-	p.MustAddFunctions(
-		Baz(),
-		Foo(),
-		Bar(),
-		// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
-	)
-	defer p.Clean()
-	p.MustRun(context.Background())
+	var program di.Program
+
+	writeTempFile(&program)
+	provideTempDirName(&program)
+	provideTempFile(&program)
+	// NOTE: Program will rearrange Functions properly basing on dependency analysis.
+
+	defer program.Clean()
+	program.MustRun(context.Background())
 	// Output:
-	// create temp dir
-	// create and open temp file
-	// write temp file
-	// close and delete temp file
-	// delete temp dir
+	// 1. create temp dir
+	// 2. create and open temp file
+	// 3. write temp file
+	// 4. close and delete temp file
+	// 5. delete temp dir
 }
 
-func Foo() di.Function {
+func provideTempDirName(program *di.Program) {
 	var tempDirName string
-	var cleanup func()
-	return di.Function{
-		Tag: di.FullFunctionName(Foo),
-		Results: []di.Result{
-			{OutValueID: "temp-dir-name", OutValuePtr: &tempDirName},
-		},
-		CleanupPtr: &cleanup,
-		Body: func(_ context.Context) error {
-			fmt.Println("create temp dir")
+	program.MustNewFunction(
+		di.Result("TEMP_DIR_NAME", &tempDirName),
+		di.Body(func(context.Context) error {
+			fmt.Println("1. create temp dir")
 			var err error
 			tempDirName, err = ioutil.TempDir("", "")
-			if err != nil {
-				return err
-			}
-			cleanup = func() {
-				fmt.Println("delete temp dir")
-				os.Remove(tempDirName)
-			}
-			return nil
-		},
-	}
+			return err
+		}),
+		di.Cleanup(func() {
+			fmt.Println("5. delete temp dir")
+			os.Remove(tempDirName)
+		}),
+	)
 }
 
-func Bar() di.Function {
-	var tempDirName string
-	var tempFile *os.File
-	var cleanup func()
-	return di.Function{
-		Tag: di.FullFunctionName(Bar),
-		Arguments: []di.Argument{
-			{InValueID: "temp-dir-name", InValuePtr: &tempDirName},
-		},
-		Results: []di.Result{
-			{OutValueID: "temp-file", OutValuePtr: &tempFile},
-		},
-		CleanupPtr: &cleanup,
-		Body: func(_ context.Context) error {
-			fmt.Println("create and open temp file")
+func provideTempFile(program *di.Program) {
+	var (
+		tempDirName string
+		tempFile    *os.File
+	)
+	program.MustNewFunction(
+		di.Argument("TEMP_DIR_NAME", &tempDirName),
+		di.Result("TEMP_FILE", &tempFile),
+		di.Body(func(context.Context) error {
+			fmt.Println("2. create and open temp file")
 			var err error
 			tempFile, err = os.Create(filepath.Join(tempDirName, "temp"))
-			if err != nil {
-				return err
-			}
-			cleanup = func() {
-				fmt.Println("close and delete temp file")
-				tempFile.Close()
-				os.Remove(tempFile.Name())
-			}
-			return nil
-		},
-	}
+			return err
+		}),
+		di.Cleanup(func() {
+			fmt.Println("4. close and delete temp file")
+			tempFile.Close()
+			os.Remove(tempFile.Name())
+		}),
+	)
 }
 
-func Baz() di.Function {
+func writeTempFile(program *di.Program) {
 	var tempFile *os.File
-	return di.Function{
-		Tag: di.FullFunctionName(Baz),
-		Arguments: []di.Argument{
-			{InValueID: "temp-file", InValuePtr: &tempFile},
-		},
-		Body: func(_ context.Context) error {
-			fmt.Println("write temp file")
+	program.MustNewFunction(
+		di.Argument("TEMP_FILE", &tempFile),
+		di.Body(func(context.Context) error {
+			fmt.Println("3. write temp file")
 			_, err := tempFile.WriteString("hello world")
 			return err
-		},
-	}
+		}),
+	)
 }

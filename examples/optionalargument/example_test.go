@@ -8,44 +8,42 @@ import (
 )
 
 func Example() {
-	var p di.Program
-	p.MustAddFunctions(
-		Bar(),
-		Foo(),
-		// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
-	)
-	defer p.Clean()
-	p.MustRun(context.Background())
+	var program di.Program
+
+	substractFooWithBar(&program)
+	provideFoo(&program)
+	// NOTE: Program will rearrange Functions properly basing on dependency analysis.
+
+	defer program.Clean()
+	program.MustRun(context.Background())
 	// Output:
-	// y - x = 99
+	// foo = 100
+	// foo - bar = 99
 }
 
-func Foo() di.Function {
-	var y int
-	return di.Function{
-		Tag: di.FullFunctionName(Foo),
-		Results: []di.Result{
-			{OutValueID: "y", OutValuePtr: &y},
-		},
-		Body: func(_ context.Context) error {
-			y = 199
+func provideFoo(program *di.Program) {
+	var foo int
+	program.MustNewFunction(
+		di.Result("FOO", &foo),
+		di.Body(func(context.Context) error {
+			foo = 100
+			fmt.Printf("foo = %d\n", foo)
 			return nil
-		},
-	}
+		}),
+	)
 }
 
-func Bar() di.Function {
-	x := 100
-	var y int
-	return di.Function{
-		Tag: di.FullFunctionName(Bar),
-		Arguments: []di.Argument{
-			{InValueID: "x", InValuePtr: &x, IsOptional: true},
-			{InValueID: "y", InValuePtr: &y},
-		},
-		Body: func(_ context.Context) error {
-			fmt.Printf("y - x = %d\n", y-x)
+func substractFooWithBar(program *di.Program) {
+	var (
+		foo int
+		bar int = 1
+	)
+	program.MustNewFunction(
+		di.Argument("FOO", &foo),
+		di.OptionalArgument("BAR", &bar),
+		di.Body(func(context.Context) error {
+			fmt.Printf("foo - bar = %d\n", foo-bar)
 			return nil
-		},
-	}
+		}),
+	)
 }

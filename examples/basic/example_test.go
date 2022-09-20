@@ -8,92 +8,82 @@ import (
 )
 
 func Example() {
-	var p di.Program
-	p.MustAddFunctions(
-		Bar(),
-		Qux(),
-		Baz(),
-		Foo(),
-		// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
-	)
-	defer p.Clean()
-	p.MustRun(context.Background())
+	var program di.Program
+
+	provideBaz(&program)
+	provideFoo(&program)
+	showAll(&program)
+	provideBar(&program)
+	// NOTE: Program will rearrange Functions properly basing on dependency analysis.
+
+	defer program.Clean()
+	program.MustRun(context.Background())
 	// Output:
-	// x = 100
-	// y = 200
-	// z = 300
-	// x, y, z = 100, 200, 300
+	// foo = 100
+	// bar = 200
+	// baz = 300
+	// foo, bar, baz = 100, 200, 300
 }
 
-func Foo() di.Function {
-	var x int
-	return di.Function{
-		Tag: di.FullFunctionName(Foo),
-		Results: []di.Result{
-			{OutValueID: "x", OutValuePtr: &x},
-		},
-		Body: func(_ context.Context) error {
-			x = 100
-			fmt.Printf("x = %d\n", x)
+func provideFoo(program *di.Program) {
+	var foo int
+	program.MustNewFunction(
+		di.Result("FOO", &foo),
+		di.Body(func(context.Context) error {
+			foo = 100
+			fmt.Printf("foo = %d\n", foo)
 			return nil
-		},
-	}
+		}),
+	)
 }
 
-func Bar() di.Function {
-	var x int
-	var y int
-	return di.Function{
-		Tag: di.FullFunctionName(Bar),
-		Arguments: []di.Argument{
-			{InValueID: "x", InValuePtr: &x},
-		},
-		Results: []di.Result{
-			{OutValueID: "y", OutValuePtr: &y},
-		},
-		Body: func(_ context.Context) error {
-			y = 2 * x
-			fmt.Printf("y = %d\n", y)
+func provideBar(program *di.Program) {
+	var (
+		foo int
+		bar int
+	)
+	program.MustNewFunction(
+		di.Argument("FOO", &foo),
+		di.Result("BAR", &bar),
+		di.Body(func(context.Context) error {
+			bar = foo * 2
+			fmt.Printf("bar = %d\n", bar)
 			return nil
-		},
-	}
+		}),
+	)
 }
 
-func Baz() di.Function {
-	var x int
-	var y int
-	var z int
-	return di.Function{
-		Tag: di.FullFunctionName(Baz),
-		Arguments: []di.Argument{
-			{InValueID: "x", InValuePtr: &x},
-			{InValueID: "y", InValuePtr: &y},
-		},
-		Results: []di.Result{
-			{OutValueID: "z", OutValuePtr: &z},
-		},
-		Body: func(_ context.Context) error {
-			z = x + y
-			fmt.Printf("z = %d\n", z)
+func provideBaz(program *di.Program) {
+	var (
+		foo int
+		bar int
+		baz int
+	)
+	program.MustNewFunction(
+		di.Argument("FOO", &foo),
+		di.Argument("BAR", &bar),
+		di.Result("BAZ", &baz),
+		di.Body(func(context.Context) error {
+			baz = foo + bar
+			fmt.Printf("baz = %d\n", baz)
 			return nil
-		},
-	}
+		}),
+	)
 }
 
-func Qux() di.Function {
-	var x int
-	var y int
-	var z int
-	return di.Function{
-		Tag: di.FullFunctionName(Qux),
-		Arguments: []di.Argument{
-			{InValueID: "x", InValuePtr: &x},
-			{InValueID: "y", InValuePtr: &y},
-			{InValueID: "z", InValuePtr: &z},
-		},
-		Body: func(_ context.Context) error {
-			fmt.Printf("x, y, z = %d, %d, %d\n", x, y, z)
+func showAll(program *di.Program) {
+	var (
+		foo int
+		bar int
+		baz int
+	)
+	program.MustNewFunction(
+		di.Argument("FOO", &foo),
+		di.Argument("BAR", &bar),
+		di.Argument("BAZ", &baz),
+		di.Body(func(context.Context) error {
+			fmt.Printf("foo, bar, baz = %d, %d, %d\n", foo, bar, baz)
 			return nil
-		},
-	}
+		}),
+	)
 }

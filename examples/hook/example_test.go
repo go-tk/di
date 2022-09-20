@@ -3,85 +3,70 @@ package di_test
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/go-tk/di"
 )
 
 func Example() {
-	var p di.Program
-	p.MustAddFunctions(
-		Foo(),
-		Baz(),
-		Qux(),
-		Bar(),
-		// NOTE: Program will rearrange above Functions properly basing on dependency analysis.
-	)
-	defer p.Clean()
-	p.MustRun(context.Background())
+	var program di.Program
+
+	showPetNameList(&program)
+	modifyPetNameList(&program)
+	providePetNameList(&program)
+	provideAdditionalPetName(&program)
+	// NOTE: Program will rearrange Functions properly basing on dependency analysis.
+
+	defer program.Clean()
+	program.MustRun(context.Background())
 	// Output:
-	// user name list: [tom jeff kim]
+	// user name list: tom,jeff,spike
 }
 
-func Foo() di.Function {
-	var userNameList *[]string
-	return di.Function{
-		Tag: di.FullFunctionName(Foo),
-		Results: []di.Result{
-			{OutValueID: "user-name-list", OutValuePtr: &userNameList},
-		},
-		Body: func(_ context.Context) error {
-			userNameList = &[]string{"tom", "jeff"}
+func providePetNameList(program *di.Program) {
+	var userNameList []string
+	program.MustNewFunction(
+		di.Result("PET_NAME_LIST", &userNameList),
+		di.Body(func(context.Context) error {
+			userNameList = []string{"tom", "jeff"}
 			return nil
-		},
-	}
+		}),
+	)
 }
 
-func Bar() di.Function {
-	var additionalUserName string
-	return di.Function{
-		Tag: di.FullFunctionName(Bar),
-		Results: []di.Result{
-			{OutValueID: "additional-user-name", OutValuePtr: &additionalUserName},
-		},
-		Body: func(_ context.Context) error {
-			additionalUserName = "kim"
+func provideAdditionalPetName(program *di.Program) {
+	var additionalPetName string
+	program.MustNewFunction(
+		di.Result("ADDITIONAL_PET_NAME", &additionalPetName),
+		di.Body(func(context.Context) error {
+			additionalPetName = "spike"
 			return nil
-		},
-	}
+		}),
+	)
 }
 
-func Baz() di.Function {
-	var userNameList *[]string
-	return di.Function{
-		Tag: di.FullFunctionName(Baz),
-		Arguments: []di.Argument{
-			{InValueID: "user-name-list", InValuePtr: &userNameList},
-		},
-		Body: func(_ context.Context) error {
-			fmt.Printf("user name list: %v\n", *userNameList)
+func showPetNameList(program *di.Program) {
+	var userNameList []string
+	program.MustNewFunction(
+		di.Argument("PET_NAME_LIST", &userNameList),
+		di.Body(func(context.Context) error {
+			fmt.Printf("user name list: %v\n", strings.Join(userNameList, ","))
 			return nil
-		},
-	}
+		}),
+	)
 }
 
-func Qux() di.Function {
-	var additionalUserName string
-	var userNameList *[]string
-	var callback func(_ context.Context) error
-	return di.Function{
-		Tag: di.FullFunctionName(Qux),
-		Arguments: []di.Argument{
-			{InValueID: "additional-user-name", InValuePtr: &additionalUserName},
-		},
-		Hooks: []di.Hook{
-			{InValueID: "user-name-list", InValuePtr: &userNameList, CallbackPtr: &callback},
-		},
-		Body: func(_ context.Context) error {
-			callback = func(_ context.Context) error {
-				*userNameList = append(*userNameList, additionalUserName)
-				return nil
-			}
+func modifyPetNameList(program *di.Program) {
+	var (
+		additionalPetName string
+		userNameList      *[]string
+	)
+	program.MustNewFunction(
+		di.Argument("ADDITIONAL_PET_NAME", &additionalPetName),
+		di.Body(func(context.Context) error { return nil }),
+		di.Hook("PET_NAME_LIST", &userNameList, func(context.Context) error {
+			*userNameList = append(*userNameList, additionalPetName)
 			return nil
-		},
-	}
+		}),
+	)
 }
