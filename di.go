@@ -375,7 +375,7 @@ func (p *Program) callFunctions(ctx context.Context) error {
 			}
 		}
 		if err := function.Body(ctx); err != nil {
-			return fmt.Errorf("call function: functionName=%q; %w", function.Name, err)
+			return fmt.Errorf("call function; functionName=%q: %w", function.Name, err)
 		}
 		p.calledFunctionCount++
 		for _, resultIndex := range function.ResultIndexes {
@@ -389,7 +389,7 @@ func (p *Program) callFunctions(ctx context.Context) error {
 				}
 				if err := hook.Callback(ctx); err != nil {
 					function2 := &p.functions[hook.FunctionIndex]
-					return fmt.Errorf("do callback: functionName=%q valueRef=%q; %w", function2.Name, hook.ValueRef, err)
+					return fmt.Errorf("do callback; functionName=%q valueRef=%q: %w", function2.Name, hook.ValueRef, err)
 				}
 			}
 		}
