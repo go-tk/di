@@ -269,7 +269,7 @@ func (p *Program) resolve() error {
 		result := &p.results[resultIndex]
 		valueType := result.Value.Type()
 		valueReceiverType := argument.ValueReceiver.Type()
-		if valueReceiverType == reflect.PointerTo(valueType) {
+		if valueReceiverType == reflect.PtrTo(valueType) {
 			argument.ReceiveValueAddr = true
 		} else {
 			if !valueType.AssignableTo(valueReceiverType) {
@@ -290,7 +290,7 @@ func (p *Program) resolve() error {
 		result := &p.results[resultIndex]
 		valueType := result.Value.Type()
 		valueReceiverType := hook.ValueReceiver.Type()
-		if valueReceiverType == reflect.PointerTo(valueType) {
+		if valueReceiverType == reflect.PtrTo(valueType) {
 			hook.ReceiveValueAddr = true
 		} else {
 			if !valueType.AssignableTo(valueReceiverType) {
