@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// Program consists of DI Functions which are containers for dependency injection.
 type Program struct {
 	functions             []function
 	arguments             []argument
@@ -28,14 +29,17 @@ type function struct {
 	Cleanup         func()
 }
 
+// FunctionBuilder is the type of function that constructs a DI Function.
 type FunctionBuilder func(function *function, program *Program) (err error)
 
+// NewFunction add a DI Function into the Program.
 func (p *Program) NewFunction(functionBuilders ...FunctionBuilder) error {
 	pc, _, _, _ := runtime.Caller(1)
 	functionName := runtime.FuncForPC(pc).Name()
 	return p.doNewFunction(functionName, functionBuilders...)
 }
 
+// MustNewFunction likes NewFunction but panics when an error occurs.
 func (p *Program) MustNewFunction(functionBuilders ...FunctionBuilder) {
 	pc, _, _, _ := runtime.Caller(1)
 	functionName := runtime.FuncForPC(pc).Name()
@@ -65,6 +69,7 @@ func (p *Program) doNewFunction(functionName string, functionBuilders ...Functio
 	return nil
 }
 
+// ErrBodyRequired is returned by Program.NewFunction() when no body is specified.
 var ErrBodyRequired = errors.New("di: body required")
 
 type argument struct {
@@ -76,10 +81,12 @@ type argument struct {
 	ReceiveValueAddr bool
 }
 
+// Argument specifies an argument for a DI Function.
 func Argument(valueRef string, rawValueReceiverPtr interface{}) FunctionBuilder {
 	return argument1(valueRef, rawValueReceiverPtr, false)
 }
 
+// OptionalArgument specifies an optional argument for a DI Function.
 func OptionalArgument(valueRef string, rawValueReceiverPtr interface{}) FunctionBuilder {
 	return argument1(valueRef, rawValueReceiverPtr, true)
 }
@@ -113,6 +120,7 @@ func argument1(valueRef string, rawValueReceiverPtr interface{}, isOptional bool
 	}
 }
 
+// ErrInvalidArgument is returned by Program.NewFunction() when an invalid argument is specified.
 var ErrInvalidArgument = errors.New("di: invalid augment")
 
 type result struct {
@@ -122,6 +130,7 @@ type result struct {
 	HookIndexes   []int
 }
 
+// Result specifies a result for a DI Function.
 func Result(valueName string, rawValuePtr interface{}) FunctionBuilder {
 	return func(function *function, program *Program) error {
 		if valueName == "" {
@@ -149,8 +158,10 @@ func Result(valueName string, rawValuePtr interface{}) FunctionBuilder {
 	}
 }
 
+// ErrInvalidResult is returned by Program.NewFunction() when an invalid result is specified.
 var ErrInvalidResult = errors.New("di: invalid result")
 
+// Body specifies the body for a DI Function.
 func Body(body func(context.Context) error) FunctionBuilder {
 	return func(function *function, program *Program) error {
 		if body == nil {
@@ -161,8 +172,10 @@ func Body(body func(context.Context) error) FunctionBuilder {
 	}
 }
 
+// ErrNilBody is returned by Program.NewFunction() when nil body is specified.
 var ErrNilBody = errors.New("di: nil body")
 
+// Cleanup specifies the cleanup for a DI Function.
 func Cleanup(cleanup func()) FunctionBuilder {
 	return func(function *function, program *Program) error {
 		if cleanup == nil {
@@ -173,6 +186,7 @@ func Cleanup(cleanup func()) FunctionBuilder {
 	}
 }
 
+// ErrNilCleanup is returned by Program.NewFunction() when nil cleanup is specified.
 var ErrNilCleanup = errors.New("di: nil cleanup")
 
 type hook struct {
@@ -183,6 +197,7 @@ type hook struct {
 	ReceiveValueAddr bool
 }
 
+// Hook specifies a hook for a DI Function.
 func Hook(valueRef string, rawValueReceiverPtr interface{}, callback func(context.Context) error) FunctionBuilder {
 	return func(function *function, program *Program) error {
 		if valueRef == "" {
@@ -214,8 +229,11 @@ func Hook(valueRef string, rawValueReceiverPtr interface{}, callback func(contex
 	}
 }
 
+// ErrInvalidHook is returned by Program.NewFunction() when an invalid hook is specified.
 var ErrInvalidHook = errors.New("di: invalid hook")
 
+// Run calls all DI Functions added into the Program, the order in which DI Functions are to be called
+// is based on dependency analysis.
 func (p *Program) Run(ctx context.Context) error {
 	if err := p.resolve(); err != nil {
 		return err
@@ -398,18 +416,28 @@ func (p *Program) callFunctions(ctx context.Context) error {
 }
 
 var (
-	ErrDuplicateValueName        = errors.New("di: duplicate value name")
-	ErrValueNotFound             = errors.New("di: value not found")
+	// ErrDuplicateValueName is returned by Program.Run() when a value name used by Result() is duplicate.
+	ErrDuplicateValueName = errors.New("di: duplicate value name")
+
+	// ErrValueNotFound is returned by Program.Run() when a value used by Argument()/Hook() does not exist.
+	ErrValueNotFound = errors.New("di: value not found")
+
+	// ErrIncompatibleValueReceiver is returned by Program.Run() when a value receiver used by Argument()/Hook() is incompatible.
 	ErrIncompatibleValueReceiver = errors.New("di: incompatible value receiver")
-	ErrCircularDependencies      = errors.New("di: circular dependencies")
+
+	// ErrCircularDependencies is returned by Program.Run() when circular dependencies are detected.
+	ErrCircularDependencies = errors.New("di: circular dependencies")
 )
 
+// MustRun likes Run but panics when an error occurs.
 func (p *Program) MustRun(ctx context.Context) {
 	if err := p.Run(ctx); err != nil {
 		panic(fmt.Sprintf("run program: %v", err))
 	}
 }
 
+// Clean calls cleanups of DI Functions, the order in which cleanups are to be called
+// is reversed to the order in which DI Functions are called.
 func (p *Program) Clean() {
 	for i := p.calledFunctionCount - 1; i >= 0; i-- {
 		functionIndex := p.sortedFunctionIndexes[i]
