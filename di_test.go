@@ -18,9 +18,7 @@ func TestArgument(t *testing.T) {
 		repr   string
 	}
 	tc := testcase.New(func(t *testing.T, c *C) {
-		t.Parallel()
-
-		testcase.DoCallback(0, t, c)
+		testcase.Callback(t, "0")
 
 		var p Program
 		err := p.NewFunction(c.functionBuilder, Body(func(context.Context) error { return nil }))
@@ -38,7 +36,7 @@ func TestArgument(t *testing.T) {
 		assert.Equal(t, c.repr, p.DumpAsString())
 	})
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Argument("", nil)
 		c.err = ErrInvalidArgument
 		c.errStr = c.err.Error() + `: empty value ref; functionName="github.com/go-tk/di_test.TestArgument.func1"`
@@ -46,9 +44,9 @@ func TestArgument(t *testing.T) {
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Argument("foo", nil)
 		c.err = ErrInvalidArgument
 		c.errStr = c.err.Error() + `: no value receiver; functionName="github.com/go-tk/di_test.TestArgument.func1" valueRef="foo"`
@@ -56,9 +54,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Argument("foo", 0)
 		c.err = ErrInvalidArgument
 		c.errStr = c.err.Error() + `: invalid value receiver pointer; valueReceiverPtrType="int" functionName="github.com/go-tk/di_test.TestArgument.func1" valueRef="foo"`
@@ -66,9 +64,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Argument("foo", (*string)(nil))
 		c.err = ErrInvalidArgument
 		c.errStr = c.err.Error() + `: no value receiver; functionName="github.com/go-tk/di_test.TestArgument.func1" valueRef="foo"`
@@ -76,9 +74,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Argument("foo", new(string))
 		c.repr = `
 Function[0]:
@@ -99,9 +97,9 @@ Argument[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = OptionalArgument("foo", new(string))
 		c.repr = `
 Function[0]:
@@ -122,7 +120,7 @@ Argument[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 }
 
 func TestHook(t *testing.T) {
@@ -134,9 +132,7 @@ func TestHook(t *testing.T) {
 		repr   string
 	}
 	tc := testcase.New(func(t *testing.T, c *C) {
-		t.Parallel()
-
-		testcase.DoCallback(0, t, c)
+		testcase.Callback(t, "0")
 
 		var p Program
 		err := p.NewFunction(c.functionBuilder, Body(func(context.Context) error { return nil }))
@@ -154,7 +150,7 @@ func TestHook(t *testing.T) {
 		assert.Equal(t, c.repr, p.DumpAsString())
 	})
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Hook("", nil, nil)
 		c.err = ErrInvalidHook
 		c.errStr = c.err.Error() + `: empty value ref; functionName="github.com/go-tk/di_test.TestHook.func1"`
@@ -162,9 +158,9 @@ func TestHook(t *testing.T) {
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Hook("foo", nil, nil)
 		c.err = ErrInvalidHook
 		c.errStr = c.err.Error() + `: no value receiver; functionName="github.com/go-tk/di_test.TestHook.func1" valueRef="foo"`
@@ -172,9 +168,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Hook("foo", 0, nil)
 		c.err = ErrInvalidHook
 		c.errStr = c.err.Error() + `: invalid value receiver pointer; valueReceiverPtrType="int" functionName="github.com/go-tk/di_test.TestHook.func1" valueRef="foo"`
@@ -182,9 +178,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Hook("foo", (*string)(nil), nil)
 		c.err = ErrInvalidHook
 		c.errStr = c.err.Error() + `: no value receiver; functionName="github.com/go-tk/di_test.TestHook.func1" valueRef="foo"`
@@ -192,9 +188,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Hook("foo", new(string), nil)
 		c.err = ErrInvalidHook
 		c.errStr = c.err.Error() + `: nil callback; functionName="github.com/go-tk/di_test.TestHook.func1" valueRef="foo"`
@@ -202,9 +198,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Hook("foo", new(string), func(context.Context) error { return nil })
 		c.repr = `
 Function[0]:
@@ -224,7 +220,7 @@ Hook[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 }
 
 func TestResult(t *testing.T) {
@@ -236,9 +232,7 @@ func TestResult(t *testing.T) {
 		repr   string
 	}
 	tc := testcase.New(func(t *testing.T, c *C) {
-		t.Parallel()
-
-		testcase.DoCallback(0, t, c)
+		testcase.Callback(t, "0")
 
 		var p Program
 		err := p.NewFunction(c.functionBuilder, Body(func(context.Context) error { return nil }))
@@ -256,7 +250,7 @@ func TestResult(t *testing.T) {
 		assert.Equal(t, c.repr, p.DumpAsString())
 	})
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Result("", nil)
 		c.err = ErrInvalidResult
 		c.errStr = c.err.Error() + `: empty value name; functionName="github.com/go-tk/di_test.TestResult.func1"`
@@ -264,9 +258,9 @@ func TestResult(t *testing.T) {
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Result("foo", nil)
 		c.err = ErrInvalidResult
 		c.errStr = c.err.Error() + `: no value; functionName="github.com/go-tk/di_test.TestResult.func1" valueName="foo"`
@@ -274,9 +268,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Result("foo", 0)
 		c.err = ErrInvalidResult
 		c.errStr = c.err.Error() + `: invalid value pointer; valuePtrType="int" functionName="github.com/go-tk/di_test.TestResult.func1" valueName="foo"`
@@ -284,9 +278,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Result("foo", (*string)(nil))
 		c.err = ErrInvalidResult
 		c.errStr = c.err.Error() + `: no value; functionName="github.com/go-tk/di_test.TestResult.func1" valueName="foo"`
@@ -294,9 +288,9 @@ CalledFunctionCount: 0
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Result("foo", new(string))
 		c.repr = `
 Function[0]:
@@ -315,7 +309,7 @@ Result[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 }
 
 func TestBody(t *testing.T) {
@@ -327,9 +321,7 @@ func TestBody(t *testing.T) {
 		repr   string
 	}
 	tc := testcase.New(func(t *testing.T, c *C) {
-		t.Parallel()
-
-		testcase.DoCallback(0, t, c)
+		testcase.Callback(t, "0")
 
 		var p Program
 		err := p.NewFunction(c.functionBuilder, Body(func(context.Context) error { return nil }))
@@ -347,7 +339,7 @@ func TestBody(t *testing.T) {
 		assert.Equal(t, c.repr, p.DumpAsString())
 	})
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Body(nil)
 		c.err = ErrNilBody
 		c.errStr = c.err.Error() + `; functionName="github.com/go-tk/di_test.TestBody.func1"`
@@ -355,9 +347,9 @@ func TestBody(t *testing.T) {
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Body(func(context.Context) error { return nil })
 		c.repr = `
 Function[0]:
@@ -371,7 +363,7 @@ Function[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 }
 
 func TestCleanup(t *testing.T) {
@@ -383,9 +375,7 @@ func TestCleanup(t *testing.T) {
 		repr   string
 	}
 	tc := testcase.New(func(t *testing.T, c *C) {
-		t.Parallel()
-
-		testcase.DoCallback(0, t, c)
+		testcase.Callback(t, "0")
 
 		var p Program
 		err := p.NewFunction(c.functionBuilder, Body(func(context.Context) error { return nil }))
@@ -403,7 +393,7 @@ func TestCleanup(t *testing.T) {
 		assert.Equal(t, c.repr, p.DumpAsString())
 	})
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Cleanup(nil)
 		c.err = ErrNilCleanup
 		c.errStr = c.err.Error() + `; functionName="github.com/go-tk/di_test.TestCleanup.func1"`
@@ -411,9 +401,9 @@ func TestCleanup(t *testing.T) {
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.functionBuilder = Cleanup(func() {})
 		c.repr = `
 Function[0]:
@@ -427,7 +417,7 @@ Function[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 }
 
 func TestNewFunction(t *testing.T) {
@@ -439,9 +429,7 @@ func TestNewFunction(t *testing.T) {
 		repr   string
 	}
 	tc := testcase.New(func(t *testing.T, c *C) {
-		t.Parallel()
-
-		testcase.DoCallback(0, t, c)
+		testcase.Callback(t, "0")
 
 		var p Program
 		err := p.NewFunction(c.functionBuilders...)
@@ -459,16 +447,16 @@ func TestNewFunction(t *testing.T) {
 		assert.Equal(t, c.repr, p.DumpAsString())
 	})
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		c.err = ErrBodyRequired
 		c.errStr = c.err.Error() + `; functionName="github.com/go-tk/di_test.TestNewFunction.func1"`
 		c.repr = `
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		var (
 			arg1 int
 			arg2 string
@@ -535,7 +523,7 @@ Hook[1]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 }
 
 func TestProgram_MustNewFunction(t *testing.T) {
@@ -559,13 +547,12 @@ func TestProgram_Run(t *testing.T) {
 		repr   string
 	}
 	tc := testcase.New(func(t *testing.T, c *C) {
-		t.Parallel()
 		var p Program
 		ctx := context.Background()
 		c.p = &p
 		c.ctx = &ctx
 
-		testcase.DoCallback(0, t, c)
+		testcase.Callback(t, "0")
 
 		err := p.Run(ctx)
 		if c.errStr == "" {
@@ -582,7 +569,7 @@ func TestProgram_Run(t *testing.T) {
 		assert.Equal(t, c.repr, p.DumpAsString())
 	})
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var res1 int
 			err := c.p.NewFunction(Result("res1", &res1), Body(func(context.Context) error { return nil }))
@@ -629,9 +616,9 @@ Result[1]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var arg int
 			err := c.p.NewFunction(Argument("arg", &arg), Body(func(context.Context) error { return nil }))
@@ -660,9 +647,9 @@ Argument[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var arg int
 			err := c.p.NewFunction(OptionalArgument("arg", &arg), Body(func(context.Context) error { return nil }))
@@ -689,9 +676,9 @@ Argument[0]:
 SortedFunctionIndexes: [0]
 CalledFunctionCount: 1
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var val int
 			err := c.p.NewFunction(Result("val", &val), Body(func(context.Context) error { return nil }))
@@ -740,9 +727,9 @@ Result[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var hook int
 			err := c.p.NewFunction(Body(func(context.Context) error { return nil }),
@@ -771,9 +758,9 @@ Hook[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var val int
 			err := c.p.NewFunction(Result("val", &val), Body(func(context.Context) error { return nil }))
@@ -822,9 +809,9 @@ Hook[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var val int
 			var pval *int
@@ -859,9 +846,9 @@ Result[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var val int
 			var pval *int
@@ -896,9 +883,9 @@ Hook[0]:
 SortedFunctionIndexes: []
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var val int
 			err := c.p.NewFunction(Argument("val", &val), Body(func(context.Context) error { return nil }))
@@ -967,9 +954,9 @@ Result[0]:
 SortedFunctionIndexes: [2 0 1]
 CalledFunctionCount: 3
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var (
 				x int
@@ -1079,9 +1066,9 @@ Result[1]:
 SortedFunctionIndexes: [2 0 1]
 CalledFunctionCount: 3
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var (
 				x int
@@ -1188,9 +1175,9 @@ Hook[1]:
 SortedFunctionIndexes: [2 1 0]
 CalledFunctionCount: 3
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		var cancel context.CancelFunc
 		*c.ctx, cancel = context.WithTimeout(context.Background(), 0)
 		_ = cancel
@@ -1217,9 +1204,9 @@ Function[0]:
 SortedFunctionIndexes: [0]
 CalledFunctionCount: 0
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		var cancel context.CancelFunc
 		*c.ctx, cancel = context.WithCancel(context.Background())
 		cancel()
@@ -1274,7 +1261,7 @@ Hook[0]:
 SortedFunctionIndexes: [1 0]
 CalledFunctionCount: 2
 `[1:]
-	}).Run(t)
+	}).RunParallel(t)
 }
 
 func TestProgram_MustRun(t *testing.T) {
@@ -1300,13 +1287,12 @@ func TestProgram_Clean(t *testing.T) {
 		seq    string
 	}
 	tc := testcase.New(func(t *testing.T, c *C) {
-		t.Parallel()
 		var p Program
 		ctx := context.Background()
 		c.p = &p
 		c.ctx = &ctx
 
-		testcase.DoCallback(0, t, c)
+		testcase.Callback(t, "0")
 
 		err := p.Run(ctx)
 		if c.errStr == "" {
@@ -1322,10 +1308,10 @@ func TestProgram_Clean(t *testing.T) {
 		}
 		p.Clean()
 
-		testcase.DoCallback(1, t, c)
+		testcase.Callback(t, "1")
 	})
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var (
 				x int
@@ -1360,11 +1346,11 @@ func TestProgram_Clean(t *testing.T) {
 				t.Fatal(err)
 			}
 		}()
-	}).SetCallback(1, func(t *testing.T, c *C) {
+	}).WithCallback("1", func(t *testing.T, c *C) {
 		assert.Equal(t, c.seq, "ECFABDG")
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var (
 				x int
@@ -1400,11 +1386,11 @@ func TestProgram_Clean(t *testing.T) {
 			}
 		}()
 		c.errStr = `do callback; functionName="github.com/go-tk/di_test.TestProgram_Clean.func4.3" valueRef="y": ` + context.Canceled.Error()
-	}).SetCallback(1, func(t *testing.T, c *C) {
+	}).WithCallback("1", func(t *testing.T, c *C) {
 		assert.Equal(t, c.seq, "ECFDG")
-	}).Run(t)
+	}).RunParallel(t)
 
-	tc.Copy().SetCallback(0, func(t *testing.T, c *C) {
+	tc.WithCallback("0", func(t *testing.T, c *C) {
 		func() {
 			var (
 				x int
@@ -1440,7 +1426,7 @@ func TestProgram_Clean(t *testing.T) {
 			}
 		}()
 		c.errStr = `call function; functionName="github.com/go-tk/di_test.TestProgram_Clean.func6.1": ` + context.Canceled.Error()
-	}).SetCallback(1, func(t *testing.T, c *C) {
+	}).WithCallback("1", func(t *testing.T, c *C) {
 		assert.Equal(t, c.seq, "ECFADG")
-	}).Run(t)
+	}).RunParallel(t)
 }

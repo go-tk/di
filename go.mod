@@ -1,9 +1,9 @@
 module github.com/go-tk/di
 
-go 1.17
+go 1.19
 
 require (
-	github.com/go-tk/testcase v0.7.1
+	github.com/go-tk/testcase v0.8.0
 	github.com/stretchr/testify v1.8.0
 )
 
