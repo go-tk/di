@@ -11,10 +11,10 @@ import (
 func Example() {
 	var program di.Program
 
-	showPetNameList(&program)
-	modifyPetNameList(&program)
-	providePetNameList(&program)
-	provideAdditionalPetName(&program)
+	showUserNameList(&program)
+	modifyUserNameList(&program)
+	provideUserNameList(&program)
+	provideAdditionalUserName(&program)
 	// NOTE: Program will rearrange Functions properly basing on dependency analysis.
 
 	defer program.Clean()
@@ -23,10 +23,10 @@ func Example() {
 	// user name list: tom,jeff,spike
 }
 
-func providePetNameList(program *di.Program) {
+func provideUserNameList(program *di.Program) {
 	var userNameList []string
 	program.MustNewFunction(
-		di.Result("PET_NAME_LIST", &userNameList),
+		di.Result("USER_NAME_LIST", &userNameList),
 		di.Body(func(context.Context) error {
 			userNameList = []string{"tom", "jeff"}
 			return nil
@@ -34,21 +34,21 @@ func providePetNameList(program *di.Program) {
 	)
 }
 
-func provideAdditionalPetName(program *di.Program) {
-	var additionalPetName string
+func provideAdditionalUserName(program *di.Program) {
+	var additionalUserName string
 	program.MustNewFunction(
-		di.Result("ADDITIONAL_PET_NAME", &additionalPetName),
+		di.Result("ADDITIONAL_USER_NAME", &additionalUserName),
 		di.Body(func(context.Context) error {
-			additionalPetName = "spike"
+			additionalUserName = "spike"
 			return nil
 		}),
 	)
 }
 
-func showPetNameList(program *di.Program) {
+func showUserNameList(program *di.Program) {
 	var userNameList []string
 	program.MustNewFunction(
-		di.Argument("PET_NAME_LIST", &userNameList),
+		di.Argument("USER_NAME_LIST", &userNameList),
 		di.Body(func(context.Context) error {
 			fmt.Printf("user name list: %v\n", strings.Join(userNameList, ","))
 			return nil
@@ -56,16 +56,16 @@ func showPetNameList(program *di.Program) {
 	)
 }
 
-func modifyPetNameList(program *di.Program) {
+func modifyUserNameList(program *di.Program) {
 	var (
-		additionalPetName string
-		userNameList      *[]string
+		additionalUserName string
+		userNameList       *[]string
 	)
 	program.MustNewFunction(
-		di.Argument("ADDITIONAL_PET_NAME", &additionalPetName),
+		di.Argument("ADDITIONAL_USER_NAME", &additionalUserName),
 		di.Body(func(context.Context) error { return nil }),
-		di.Hook("PET_NAME_LIST", &userNameList, func(context.Context) error {
-			*userNameList = append(*userNameList, additionalPetName)
+		di.Hook("USER_NAME_LIST", &userNameList, func(context.Context) error {
+			*userNameList = append(*userNameList, additionalUserName)
 			return nil
 		}),
 	)
